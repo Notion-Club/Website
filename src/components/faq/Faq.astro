@@ -1,0 +1,382 @@
+---
+/**
+ * Faq.astro — Annexe 7 : FAQ en accordéon fluide.
+ *
+ * 6 cartes blanches pleine largeur. Icône « + » qui pivote (45°) à l'ouverture.
+ * Transition de hauteur animée via la Web Animations API (height 0 → scrollHeight).
+ * Comportement : UN SEUL panneau ouvert à la fois (single-open, cf. source).
+ *
+ * Reconstruit depuis block_faq.html (source verbatim).
+ * Nettoyage : Google Fonts / Tailwind CDN / iconify retirés ; SVG inline ;
+ * #e0625a remplacé par var(--accent).
+ */
+const faqs = [
+  {
+    q: "Vais-je vraiment gagner de l'argent ?",
+    a: `Difficile à dire : tout dépend de toi.<br>
+On apporte des méthodes éprouvées, mais les personnes qui vivent de cette activité ont travaillé sérieusement et ont pris des appels de coaching pour progresser.<br><br>
+Ce n'est pas une solution miracle. Ça n'existe pas.`,
+  },
+  {
+    q: "Faut-il déjà maîtriser Notion parfaitement ?",
+    a: `Non, on te forme à devenir expert Notion.<br>
+En revanche, il faut déjà avoir ouvert l'application pour comprendre les bases : on ne t'apprend pas à créer un compte.`,
+  },
+  {
+    q: "Ai-je besoin d'avoir un réseau pour vendre mes services Notion ?",
+    a: `Non. La plupart des membres se lancent en partant de zéro, sans expertise technique ni business.<br>
+On t'accompagne de A à Z pour mettre en place une stratégie d'acquisition afin de trouver tes clients.`,
+  },
+  {
+    q: "Le marché n'est-il pas saturé avec trop de concurrents ?",
+    a: `On est encore loin de là.<br>
+La demande est supérieure à l'offre, avec moins de 100 consultants Notion en France, pour plus de 8 millions de TPE/PME.<br><br>
+Ça fait environ 80&nbsp;000 prospects par consultant : il y a un boulevard, porté par la prise de conscience liée à l'IA et par des entreprises qui veulent intégrer des solutions intelligentes pour gagner en efficacité.`,
+  },
+  {
+    q: "Combien de temps faut-il y consacrer par semaine ?",
+    a: `Si tu n'as pas 5 à 6 heures à investir par semaine minimum, ça ne sert à rien.<br>
+Les résultats seront difficiles à obtenir : l'intensité est la clé, surtout au départ.`,
+  },
+  {
+    q: "Est-ce une formation vidéo ?",
+    a: `Oui, mais ce n'est pas suffisant.<br>
+On a donc mis en place un accompagnement individuel pour te guider vers tes premiers clients.<br><br>
+Les vidéos t'apprennent les bases, et on est à tes côtés pour suivre ta progression.`,
+  },
+];
+---
+
+<section id="faq" class="faq">
+  <div class="faq__inner">
+    <header class="faq__head">
+      <span class="faq__badge">Foire aux questions</span>
+      <h2 class="faq__title">Tes questions, Nos Réponses</h2>
+    </header>
+
+    <div class="faq__list" id="faqList">
+      {faqs.map((item, i) => (
+        <div class="faq-card">
+          <button
+            class="faq-trigger"
+            type="button"
+            aria-expanded="false"
+            aria-controls={`faq-panel-${i}`}
+            id={`faq-trigger-${i}`}
+          >
+            <span class="question-text">{item.q}</span>
+            <span class="icon-trigger" aria-hidden="true">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            </span>
+          </button>
+          <div
+            class="accordion-wrap"
+            id={`faq-panel-${i}`}
+            role="region"
+            aria-labelledby={`faq-trigger-${i}`}
+          >
+            <div class="accordion-body" set:html={item.a} />
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq {
+    width: 100%;
+    padding: 48px 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  .faq__inner {
+    width: 100%;
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Header — badge → titre */
+  .faq__head {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .faq__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 18px;
+    border-radius: 9999px;
+    background: var(--accent-soft, #fceceb);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin-bottom: 20px;
+  }
+  .faq__title {
+    font-size: clamp(26px, 4.5vw, 48px);
+    font-weight: 700;
+    color: #1e293b;
+    letter-spacing: -0.025em;
+    line-height: 1.08;
+    margin: 0;
+  }
+
+  .faq__list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+  }
+
+  /* Carte */
+  .faq-card {
+    position: relative;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    transition: border-color 0.4s, box-shadow 0.4s, transform 0.4s;
+    transition-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .faq-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+  }
+
+  /* Déclencheur */
+  .faq-trigger {
+    width: 100%;
+    cursor: pointer;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    -webkit-user-select: none;
+    user-select: none;
+    background: #fff;
+    position: relative;
+    z-index: 2;
+    border: 0;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+  }
+
+  .question-text {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.0125em;
+    padding-right: 1rem;
+    background: linear-gradient(135deg, #1e293b, #334155);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transition: background 0.3s;
+  }
+  .faq-card:hover .question-text {
+    background: linear-gradient(135deg, var(--accent), #f8b4b0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Icône + */
+  .icon-trigger {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    padding: 6px;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border: 1px solid #f1f5f9;
+    color: #64748b;
+    transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1),
+      background 0.4s, border-color 0.4s, color 0.4s, box-shadow 0.4s;
+  }
+  .icon-trigger.is-active {
+    transform: rotate(45deg);
+    background: linear-gradient(135deg, var(--accent), #f8b4b0);
+    border-color: #f8b4b0;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(224, 98, 90, 0.25);
+  }
+
+  /* Contenu — replié par défaut, animé via JS */
+  .accordion-wrap {
+    overflow: hidden;
+    height: 0;
+  }
+  .accordion-body {
+    padding: 4px 20px 24px;
+    color: #475569;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.65;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .accordion-body.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (min-width: 768px) {
+    .question-text {
+      font-size: 1.125rem;
+    }
+    .accordion-body {
+      font-size: 1rem;
+    }
+  }
+
+  /* Accessibilité : on garde l'ouverture/fermeture fonctionnelle,
+     mais sans l'easing de la transition de hauteur. */
+  @media (prefers-reduced-motion: reduce) {
+    .faq-card,
+    .icon-trigger,
+    .question-text,
+    .accordion-body {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    var DUR = 420;
+    var EASE = 'cubic-bezier(.33,1,.68,1)';
+    var reduce =
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var items: any[] = [];
+
+    function Acc(this: any, card: HTMLElement) {
+      this.card = card;
+      this.wrap = card.querySelector('.accordion-wrap') as HTMLElement;
+      this.body = card.querySelector('.accordion-body') as HTMLElement;
+      this.icon = card.querySelector('.icon-trigger') as HTMLElement;
+      this.trigger = card.querySelector('.faq-trigger') as HTMLElement;
+      this.anim = null;
+      this.open = false;
+      var self = this;
+      this.trigger.addEventListener('click', function () {
+        self.toggle();
+      });
+    }
+
+    Acc.prototype.toggle = function () {
+      if (this.open) {
+        this.shut();
+      } else {
+        for (var i = 0; i < items.length; i++)
+          if (items[i] !== this && items[i].open) items[i].shut();
+        this.show();
+      }
+    };
+
+    Acc.prototype.show = function () {
+      if (this.anim) {
+        this.anim.cancel();
+        this.anim = null;
+      }
+      this.open = true;
+      this.icon.classList.add('is-active');
+      this.trigger.setAttribute('aria-expanded', 'true');
+
+      var w = this.wrap,
+        b = this.body;
+      b.classList.add('visible');
+
+      if (reduce) {
+        w.style.height = 'auto';
+        return;
+      }
+
+      /* Mesure */
+      w.style.height = 'auto';
+      var h = w.scrollHeight;
+      w.style.height = '0px';
+      void w.offsetHeight; /* reflow */
+
+      var self = this;
+      this.anim = w.animate(
+        [{ height: '0px' }, { height: h + 'px' }],
+        { duration: DUR, easing: EASE, fill: 'forwards' }
+      );
+      this.anim.onfinish = function () {
+        self.anim = null;
+        w.style.height = 'auto';
+      };
+    };
+
+    Acc.prototype.shut = function () {
+      if (this.anim) {
+        this.anim.cancel();
+        this.anim = null;
+      }
+      this.open = false;
+      this.icon.classList.remove('is-active');
+      this.trigger.setAttribute('aria-expanded', 'false');
+
+      var w = this.wrap,
+        b = this.body;
+      b.classList.remove('visible');
+
+      if (reduce) {
+        w.style.height = '0px';
+        return;
+      }
+
+      var h = w.scrollHeight;
+      var self = this;
+      this.anim = w.animate(
+        [{ height: h + 'px' }, { height: '0px' }],
+        { duration: DUR, easing: EASE, fill: 'forwards' }
+      );
+      this.anim.onfinish = function () {
+        self.anim = null;
+        w.style.height = '0px';
+      };
+    };
+
+    /* Init */
+    var cards = document.querySelectorAll('#faqList .faq-card');
+    for (var i = 0; i < cards.length; i++)
+      items.push(new (Acc as any)(cards[i]));
+
+    /* Entrée en cascade (désactivée si reduced-motion) */
+    if (!reduce) {
+      for (var j = 0; j < cards.length; j++) {
+        (function (c: HTMLElement, idx: number) {
+          c.style.opacity = '0';
+          c.style.transform = 'translateY(12px)';
+          setTimeout(function () {
+            c.style.transition =
+              'opacity .7s ease,transform .7s cubic-bezier(.25,1,.5,1)';
+            c.style.opacity = '1';
+            c.style.transform = 'translateY(0)';
+          }, 80 + idx * 70);
+        })(cards[j] as HTMLElement, j);
+      }
+    }
+  })();
+</script>

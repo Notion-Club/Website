@@ -1,0 +1,111 @@
+---
+/**
+ * Modal.astro — Coquille générique de modal (overlay blur + carte + close).
+ *
+ * - Overlay rgba(15,15,20,.55) + backdrop-filter blur(8px)
+ * - Carte radius 24, animation d'entrée translateY+scale (cubic-bezier .22,1,.36,1)
+ * - Fermeture overlay / Escape / bouton close gérée par scripts/modals.ts
+ *
+ * Accessibilité : role="dialog" + aria-modal. Le contenu passe par le slot.
+ */
+export interface Props {
+  id: string;
+  labelledby?: string;
+  /** Largeur max de la carte. */
+  size?: 'form' | 'wide';
+}
+const { id, labelledby, size = 'form' } = Astro.props;
+---
+
+<div class="nc-modal" id={id} role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby={labelledby}>
+  <div class="nc-modal__overlay"></div>
+  <div class:list={['nc-modal__card', `nc-modal__card--${size}`]}>
+    <button class="nc-modal__close" type="button" aria-label="Fermer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M6 6l12 12M18 6L6 18" />
+      </svg>
+    </button>
+    <slot />
+  </div>
+</div>
+
+<style>
+  .nc-modal {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.25s var(--ease-signature), visibility 0.25s;
+  }
+  .nc-modal.is-open {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .nc-modal__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 15, 20, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .nc-modal__card {
+    position: relative;
+    width: 100%;
+    max-width: 460px;
+    max-height: 90vh;
+    overflow: auto;
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.3);
+    transform: translateY(16px) scale(0.97);
+    transition: transform 0.32s var(--ease-signature);
+  }
+  .nc-modal__card--wide {
+    max-width: 760px;
+    height: 80vh;
+  }
+  .nc-modal.is-open .nc-modal__card {
+    transform: translateY(0) scale(1);
+  }
+
+  .nc-modal__close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 2;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.05);
+    color: #475569;
+    transition: background 0.2s ease;
+  }
+  .nc-modal__close:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+  .nc-modal__close svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nc-modal,
+    .nc-modal__card {
+      transition: opacity 0.15s linear;
+    }
+    .nc-modal__card {
+      transform: none;
+    }
+  }
+</style>

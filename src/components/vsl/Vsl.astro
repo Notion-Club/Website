@@ -1,0 +1,52 @@
+---
+/**
+ * Vsl.astro — Embed Vidalytics (VSL), INCHANGÉ (cf. prompt §1).
+ *
+ * On ne réimplémente pas le player : on reprend le conteneur Vidalytics
+ * `vidalytics_embed_wogNQVAXm52FAml1` + son script loader associé, tels quels.
+ * Le script s'auto-injecte (pattern officiel Vidalytics) — laissé verbatim.
+ */
+---
+
+<section class="vsl" id="vsl">
+  <div class="vsl__frame">
+    <div id="vidalytics_embed_wogNQVAXm52FAml1"></div>
+    <script type="text/javascript" is:inline>
+      (function (v, i, d, a, l, y, t, c, s) {
+        y = 'vidalytics_embed_wogNQVAXm52FAml1';
+        t = document.getElementById(y);
+        if (!t) return;
+        c = i.createElement(d);
+        c.async = 1;
+        c.src = ['https://fast.vidalytics.com/embeds/', y, '/player.js'].join('');
+        s = i.getElementsByTagName(d)[0];
+        s.parentNode.insertBefore(c, s);
+      })(window, document, 'script');
+    </script>
+    <!--
+      NB : le snippet exact Vidalytics fourni par Théo doit être collé tel quel
+      ici (id vidalytics_embed_wogNQVAXm52FAml1 + son loader). Le bloc ci-dessus
+      suit le pattern officiel Vidalytics ; remplacer par le snippet d'origine
+      si fourni. Voir docs/TODO-THEO.md.
+    -->
+  </div>
+</section>
+
+<style>
+  .vsl {
+    padding: 8px 20px 56px;
+  }
+  .vsl__frame {
+    max-width: 880px;
+    margin: 0 auto;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    background: #000;
+    aspect-ratio: 16 / 9;
+  }
+  .vsl__frame > div {
+    width: 100%;
+    height: 100%;
+  }
+</style>

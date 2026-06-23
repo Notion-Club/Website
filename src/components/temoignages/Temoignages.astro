@@ -1,0 +1,676 @@
+---
+/**
+ * Temoignages.astro — Carrousel de témoignages (Annexe 3).
+ *
+ * Carrousel horizontal à ratios MIXTES (vidéo verticale, texte, photo
+ * portrait/wide/square/standard) — la variété de ratios est intentionnelle.
+ * Deux chemins de lecture vidéo conservés :
+ *   - carouselTestimonialsPlayNativeVideo : MP4 natif (hébergé sur R2)
+ *   - carouselTestimonialsPlayVideo       : fallback iframe YouTube
+ * Les MP4 utilisent <video preload="none"> joué uniquement au clic
+ * (zéro octet vidéo au chargement). Le poster reste un <img loading="lazy">.
+ *
+ * Nettoyage : aucun Google Fonts / Tailwind CDN / iconify ; SVG inline ;
+ * #e85a4f / #e0625a → var(--accent). Scoping par préfixe de classe conservé.
+ */
+---
+
+<section id="temoignages">
+  <div class="carousel-testimonials-section">
+    <header class="carousel-testimonials-header">
+      <span class="carousel-testimonials-badge">Témoignages</span>
+      <h2 class="carousel-testimonials-title">
+        Ils gagnent des milliers d'euros par mois grâce au Notion Club.
+      </h2>
+    </header>
+
+    <div class="carousel-testimonials-wrapper" id="carouselTestimonialsWrapper">
+
+      <div class="carousel-testimonials-container" id="carouselTestimonialsContainer">
+        <div class="carousel-testimonials-track" id="carouselTestimonialsTrack">
+
+          <!-- N°1 : Vidéo Verticale LAURA - NATIVE -->
+          <div class="carousel-testimonials-card carousel-testimonials-card-small carousel-testimonials-card-video-vertical" data-id="1">
+            <!-- PLACEHOLDER_R2_VIDEO : héberger le MP4 sur R2 -->
+            <!-- PLACEHOLDER_IMG : héberger la miniature -->
+            <img class="carousel-testimonials-thumb" src="https://d1yei2z3i6k35z.cloudfront.net/1888258/699514f1e309f_MiniatureYouTubeVideoMobile.png" alt="Témoignage Laura" loading="lazy" width="220" height="340">
+            <div class="carousel-testimonials-video-container carousel-testimonials-hidden"></div>
+            <button class="carousel-testimonials-play-btn" onclick="event.stopPropagation(); carouselTestimonialsPlayNativeVideo(this, 'https://d1yei2z3i6k35z.cloudfront.net/1888258/69951a9d54054_Laura916.mp4', true)">
+              <svg width="68" height="48" viewBox="0 0 68 48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="var(--accent)" opacity="0.85"></path><path d="M45 24L27 14v20" fill="white"></path></svg>
+            </button>
+          </div>
+
+          <!-- N°2 : Carte Texte - Maria S. -->
+          <div class="carousel-testimonials-card carousel-testimonials-card-small carousel-testimonials-card-text" data-id="2">
+            <!-- PLACEHOLDER_IMG : héberger l'avatar -->
+            <img class="carousel-testimonials-avatar" src="https://d1yei2z3i6k35z.cloudfront.net/1888258/6994f99289c13_MariaSimurkovaCropCircleTool.png" alt="Maria S." loading="lazy" width="56" height="56">
+            <div class="carousel-testimonials-name">Maria S.</div>
+            <p class="carousel-testimonials-quote">"J'étais très sceptique pendant le call de découverte, mais je ne regrette pas : c'est un excellent investissement"</p>
+          </div>
+
+          <!-- N°3 : Photo Nathan (1290 × 1363) -->
+          <div class="carousel-testimonials-card carousel-testimonials-card-photo ratio-portrait" data-id="3">
+            <!-- PLACEHOLDER_IMG : héberger la photo -->
+            <img class="carousel-testimonials-photo-img" src="https://d1yei2z3i6k35z.cloudfront.net/1888258/6994fcf63208e_nathanclosing.png" alt="Témoignage client Nathan" loading="lazy" width="340" height="340">
+          </div>
+
+          <!-- N°4 : Vidéo Verticale LOUIS - NATIVE -->
+          <div class="carousel-testimonials-card carousel-testimonials-card-small carousel-testimonials-card-video-vertical" data-id="4">
+            <!-- PLACEHOLDER_R2_VIDEO : héberger le MP4 sur R2 -->
+            <!-- PLACEHOLDER_IMG : héberger la miniature -->
+            <img class="carousel-testimonials-thumb" src="https://d1yei2z3i6k35z.cloudfront.net/1888258/69950f3e8ef66_MiniatureYouTubeVideoMobile2.png" alt="Témoignage Louis Carrette" loading="lazy" width="220" height="340">
+            <div class="carousel-testimonials-video-container carousel-testimonials-hidden"></div>
+            <button class="carousel-testimonials-play-btn" onclick="event.stopPropagation(); carouselTestimonialsPlayNativeVideo(this, 'https://d1yei2z3i6k35z.cloudfront.net/1888258/699520389de88_louisok.mp4', true)">
+              <svg width="68" height="48" viewBox="0 0 68 48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="var(--accent)" opacity="0.85"></path><path d="M45 24L27 14v20" fill="white"></path></svg>
+            </button>
+          </div>
+
+          <!-- N°5 : Vidéo Verticale MAEVA (NOUVEAU) - NATIVE -->
+          <div class="carousel-testimonials-card carousel-testimonials-card-small carousel-testimonials-card-video-vertical" data-id="5">
+            <!-- PLACEHOLDER_R2_VIDEO : héberger le MP4 sur R2 -->
+            <!-- PLACEHOLDER_IMG : héberger la miniature -->
+            <img class="carousel-testimonials-thumb" src="https://d1yei2z3i6k35z.cloudfront.net/1888258/6999baaee575b_ThumbnailMaeva.png" alt="Témoignage Maeva" loading="lazy" width="220" height="340">
+            <div class="carousel-testimonials-video-container carousel-testimonials-hidden"></div>
+            <button class="carousel-testimonials-play-btn" onclick="event.stopPropagation(); carouselTestimonialsPlayNativeVideo(this, 'https://d1yei2z3i6k35z.cloudfront.net/1888258/6999bac6cde0e_IMG_4092.MP4', true)">
+              <svg width="68" height="48" viewBox="0 0 68 48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="var(--accent)" opacity="0.85"></path><path d="M45 24L27 14v20" fill="white"></path></svg>
+            </button>
+          </div>
+
+          <!-- N°6 : Vidéo Verticale MAEVA (ancienne) - NATIVE -->
+          <div class="carousel-testimonials-card carousel-testimonials-card-small carousel-testimonials-card-video-vertical" data-id="6">
+            <!-- PLACEHOLDER_R2_VIDEO : héberger le MP4 sur R2 -->
+            <!-- PLACEHOLDER_IMG : héberger la miniature -->
+            <img class="carousel-testimonials-thumb" src="https://d1yei2z3i6k35z.cloudfront.net/1888258/69950f255f474_MiniatureYouTubeVideomobile3.png" alt="Témoignage Maeva" loading="lazy" width="220" height="340">
+            <div class="carousel-testimonials-video-container carousel-testimonials-hidden"></div>
+            <button class="carousel-testimonials-play-btn" onclick="event.stopPropagation(); carouselTestimonialsPlayNativeVideo(this, 'https://d1yei2z3i6k35z.cloudfront.net/1888258/6995176a16c29_TemoignageMaeva.mp4', true)">
+              <svg width="68" height="48" viewBox="0 0 68 48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="var(--accent)" opacity="0.85"></path><path d="M45 24L27 14v20" fill="white"></path></svg>
+            </button>
+          </div>
+
+          <!-- N°7 : Photo Aureline (1290 × 692) -->
+          <div class="carousel-testimonials-card carousel-testimonials-card-photo ratio-wide" data-id="7">
+            <!-- PLACEHOLDER_IMG : héberger la photo -->
+            <img class="carousel-testimonials-photo-img" src="https://d1yei2z3i6k35z.cloudfront.net/1888258/6994fba3c2c81_Aureline.jpeg" alt="Témoignage client Aureline" loading="lazy" width="635" height="340">
+          </div>
+
+          <!-- N°8 : Vidéo Verticale NATHAN - NATIVE -->
+          <div class="carousel-testimonials-card carousel-testimonials-card-small carousel-testimonials-card-video-vertical" data-id="8">
+            <!-- PLACEHOLDER_R2_VIDEO : héberger le MP4 sur R2 -->
+            <!-- PLACEHOLDER_IMG : héberger la miniature -->
+            <img class="carousel-testimonials-thumb" src="https://d1yei2z3i6k35z.cloudfront.net/1888258/6994fc5a327f6_MiniatureYouTubeVideoMobile1.png" alt="Témoignage Nathan" loading="lazy" width="220" height="340">
+            <div class="carousel-testimonials-video-container carousel-testimonials-hidden"></div>
+            <button class="carousel-testimonials-play-btn" onclick="event.stopPropagation(); carouselTestimonialsPlayNativeVideo(this, 'https://d1yei2z3i6k35z.cloudfront.net/1888258/6995125a45bcc_1763034739922299.mp4', true)">
+              <svg width="68" height="48" viewBox="0 0 68 48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="var(--accent)" opacity="0.85"></path><path d="M45 24L27 14v20" fill="white"></path></svg>
+            </button>
+          </div>
+
+          <!-- N°9 : Photo Hugo Druon (980 × 801) -->
+          <div class="carousel-testimonials-card carousel-testimonials-card-photo ratio-standard" data-id="9">
+            <!-- PLACEHOLDER_IMG : héberger la photo -->
+            <img class="carousel-testimonials-photo-img" src="https://d1yei2z3i6k35z.cloudfront.net/1888258/6994fb2a43b84_4892614E-7211-4ED6-AD86-54933FBF3F6D_1_105_c.jpeg" alt="Témoignage client Hugo Druon" loading="lazy" width="420" height="340">
+          </div>
+
+          <!-- N°10 : Photo Louis Carrette (1086 × 722) -->
+          <div class="carousel-testimonials-card carousel-testimonials-card-photo ratio-square" data-id="10">
+            <!-- PLACEHOLDER_IMG : héberger la photo -->
+            <img class="carousel-testimonials-photo-img" src="https://d1yei2z3i6k35z.cloudfront.net/1888258/6994fc86a355d_LouisCarrette.png" alt="Témoignage client Louis Carrette" loading="lazy" width="512" height="340">
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Flèche droite -->
+      <button class="carousel-testimonials-nav-arrow" id="carouselArrowRight" aria-label="Suivant">
+        <!-- PLACEHOLDER_IMG : héberger l'icône flèche -->
+        <img src="https://d1yei2z3i6k35z.cloudfront.net/1888258/69952c77b6946_Design40pxx40px1.svg" alt="Suivant" class="carousel-testimonials-custom-arrow-svg" width="48" height="48" loading="lazy">
+      </button>
+    </div>
+  </div>
+</section>
+
+<style>
+  #temoignages {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .carousel-testimonials-section {
+    width: 100%;
+    max-width: 1400px;
+    padding: 40px 0px 60px;
+  }
+
+  @media (max-width: 640px) {
+    .carousel-testimonials-section {
+      padding: 24px 0px 40px;
+    }
+  }
+
+  /* ============================================
+     HEADER (badge + titre)
+     ============================================ */
+  .carousel-testimonials-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 36px;
+    padding: 0 16px;
+  }
+
+  .carousel-testimonials-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 18px;
+    border-radius: var(--radius-pill);
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin-bottom: 20px;
+  }
+
+  .carousel-testimonials-title {
+    font-size: clamp(26px, 4.5vw, 48px);
+    font-weight: 700;
+    color: var(--text-heading);
+    letter-spacing: -0.025em;
+    line-height: 1.08;
+    margin: 0;
+  }
+
+  @media (min-width: 768px) {
+    .carousel-testimonials-badge {
+      margin-bottom: 28px;
+    }
+  }
+
+  .carousel-testimonials-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+  }
+
+  @media (max-width: 640px) {
+    .carousel-testimonials-wrapper {
+      gap: 0;
+    }
+  }
+
+  .carousel-testimonials-container {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 24px;
+    -webkit-overflow-scrolling: touch;
+    /*
+      PAS de scroll-snap CSS natif.
+      On gère le snapping manuellement en JS pour un contrôle total
+      de la position d'arrêt : carte parfaitement alignée au bord gauche,
+      sans résidu de la carte précédente.
+    */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .carousel-testimonials-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (max-width: 640px) {
+    .carousel-testimonials-container {
+      padding-bottom: 16px;
+    }
+  }
+
+  .carousel-testimonials-track {
+    display: flex;
+    gap: 16px;
+    padding-left: 0;
+    padding-right: 60px;
+  }
+
+  @media (max-width: 640px) {
+    .carousel-testimonials-track {
+      gap: 12px;
+      padding-right: 40px;
+    }
+  }
+
+  /* ============================================
+     FLÈCHE NAVIGATION
+     ============================================ */
+  .carousel-testimonials-nav-arrow {
+    position: relative;
+    z-index: 20;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (max-width: 640px) {
+    .carousel-testimonials-nav-arrow {
+      position: absolute;
+      right: 0px;
+      top: 50%;
+      transform: translateY(-60%);
+      z-index: 30;
+    }
+    .carousel-testimonials-nav-arrow .carousel-testimonials-custom-arrow-svg {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .carousel-testimonials-custom-arrow-svg {
+    display: block;
+    animation: carouselArrowSlide 2s ease-in-out infinite;
+  }
+
+  @keyframes carouselArrowSlide {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-8px); }
+  }
+
+  .carousel-testimonials-nav-arrow:hover .carousel-testimonials-custom-arrow-svg,
+  .carousel-testimonials-nav-arrow:active .carousel-testimonials-custom-arrow-svg {
+    animation: none;
+    transform: none;
+  }
+
+  @media (max-width: 640px) {
+    @keyframes carouselArrowSlide {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(-5px); }
+    }
+  }
+
+  /* Respecter prefers-reduced-motion : désactiver l'animation de flèche */
+  @media (prefers-reduced-motion: reduce) {
+    .carousel-testimonials-custom-arrow-svg {
+      animation: none !important;
+    }
+  }
+
+  /* ============================================
+     CARTES - Dimensions
+     ============================================ */
+  .carousel-testimonials-card {
+    flex-shrink: 0;
+    height: 340px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    position: relative;
+    cursor: pointer;
+  }
+
+  .carousel-testimonials-card-small { width: 220px; }
+  .carousel-testimonials-card-large { width: 480px; }
+  .carousel-testimonials-card-video-large { width: 605px; }
+
+  .carousel-testimonials-card-photo.ratio-wide { width: 635px; }
+  .carousel-testimonials-card-photo.ratio-square { width: 512px; }
+  .carousel-testimonials-card-photo.ratio-portrait { width: 340px; }
+  .carousel-testimonials-card-photo.ratio-standard { width: 420px; }
+
+  @media (max-width: 640px) {
+    .carousel-testimonials-card { height: 280px; }
+    .carousel-testimonials-card-small { width: 180px; }
+    .carousel-testimonials-card-large { width: 300px; }
+    .carousel-testimonials-card-video-large { width: 500px; }
+    .carousel-testimonials-card-photo.ratio-wide { width: 520px; }
+    .carousel-testimonials-card-photo.ratio-square { width: 420px; }
+    .carousel-testimonials-card-photo.ratio-portrait { width: 280px; }
+    .carousel-testimonials-card-photo.ratio-standard { width: 345px; }
+  }
+
+  /* ============================================
+     CARTE VIDÉO VERTICALE
+     ============================================ */
+  .carousel-testimonials-card-video-vertical { background: #000; }
+  .carousel-testimonials-card-video-vertical img.carousel-testimonials-thumb {
+    width: 100%; height: 100%; object-fit: cover; object-position: center;
+  }
+  .carousel-testimonials-card-video-vertical .carousel-testimonials-video-container {
+    width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #000;
+  }
+  .carousel-testimonials-card-video-vertical .carousel-testimonials-video-container iframe {
+    height: 100%; aspect-ratio: 9/16;
+  }
+
+  /* ============================================
+     CARTE VIDÉO HORIZONTALE
+     ============================================ */
+  .carousel-testimonials-card-video-horizontal {
+    background: #e8e8e8; display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .carousel-testimonials-card-video-horizontal .carousel-testimonials-thumbnail-img {
+    width: 100%; height: 100%; object-fit: cover; object-position: center;
+    position: absolute; top: 0; left: 0; z-index: 1;
+  }
+  .carousel-testimonials-card-video-horizontal .carousel-testimonials-video-container {
+    width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 3;
+  }
+  .carousel-testimonials-card-video-horizontal .carousel-testimonials-video-container iframe {
+    width: 100%; height: 100%;
+  }
+
+  /* ============================================
+     CARTE TEXTE
+     ============================================ */
+  .carousel-testimonials-card-text {
+    background: white; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 24px; text-align: center;
+  }
+  .carousel-testimonials-card-text .carousel-testimonials-avatar {
+    width: 56px; height: 56px; border-radius: 50%; object-fit: cover;
+    margin-bottom: 12px; border: 2px solid rgba(232, 90, 79, 0.2);
+  }
+  .carousel-testimonials-card-text .carousel-testimonials-name {
+    color: var(--accent); font-weight: 600; font-size: 16px; margin-bottom: 6px;
+  }
+  .carousel-testimonials-card-text .carousel-testimonials-quote {
+    color: #666; font-size: 14px; line-height: 1.6;
+  }
+
+  @media (max-width: 640px) {
+    .carousel-testimonials-card-text { padding: 16px; }
+    .carousel-testimonials-card-text .carousel-testimonials-avatar { width: 44px; height: 44px; }
+    .carousel-testimonials-card-text .carousel-testimonials-name { font-size: 14px; margin-bottom: 4px; }
+    .carousel-testimonials-card-text .carousel-testimonials-quote { font-size: 13px; }
+  }
+
+  /* ============================================
+     CARTE PHOTO
+     ============================================ */
+  .carousel-testimonials-card-photo {
+    background: #f5f5f5; display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .carousel-testimonials-card-photo img.carousel-testimonials-photo-img {
+    width: 100%; height: 100%; object-fit: cover; object-position: center;
+  }
+
+  /* ============================================
+     BOUTONS PLAY / CLOSE
+     ============================================ */
+  .carousel-testimonials-play-btn {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: none; border: none; cursor: pointer; transition: transform 0.3s; z-index: 5;
+  }
+  .carousel-testimonials-play-btn:hover { transform: translate(-50%, -50%) scale(1.1); }
+
+  .carousel-testimonials-yt-play-btn {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5;
+    background: none; border: none; cursor: pointer; transition: transform 0.3s, opacity 0.3s;
+  }
+  .carousel-testimonials-yt-play-btn:hover { transform: translate(-50%, -50%) scale(1.1); }
+
+  .carousel-testimonials-close-btn {
+    position: absolute; top: 12px; right: 12px; width: 36px; height: 36px;
+    background: rgba(0, 0, 0, 0.5); border: none; border-radius: 50%; color: white;
+    font-size: 18px; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; transition: background 0.3s; z-index: 10;
+  }
+  .carousel-testimonials-close-btn:hover { background: rgba(0, 0, 0, 0.7); }
+
+  .carousel-testimonials-hidden { display: none !important; }
+</style>
+
+<script>
+(function() {
+    'use strict';
+
+    var container = document.getElementById('carouselTestimonialsContainer');
+    var track = document.getElementById('carouselTestimonialsTrack');
+    var arrowBtn = document.getElementById('carouselArrowRight');
+    var isVideoPlaying = false;
+    var TOTAL_ORIGINAL = 10;
+    var isResetting = false;
+
+    // =============================================
+    // SCROLL INFINI : Cloner 3× et démarrer au set 2
+    // =============================================
+    var originalHTML = track.innerHTML;
+    track.innerHTML = originalHTML + originalHTML + originalHTML;
+
+    // Toutes les cartes (3 sets)
+    var allCards = track.querySelectorAll('.carousel-testimonials-card');
+
+    function getGap() {
+        return parseFloat(getComputedStyle(track).gap) || 16;
+    }
+
+    // =============================================
+    // Construire un index des positions de snap.
+    // Chaque carte doit s'aligner bord gauche = 0 du container.
+    // Sa position de snap = card.offsetLeft
+    // =============================================
+    function getCardPositions() {
+        var positions = [];
+        for (var i = 0; i < allCards.length; i++) {
+            positions.push(allCards[i].offsetLeft);
+        }
+        return positions;
+    }
+
+    // Largeur d'un set complet
+    function getOneSetWidth() {
+        if (allCards.length < TOTAL_ORIGINAL * 2) return 0;
+        // Distance entre le début de la carte 0 du set 1 et la carte 0 du set 2
+        return allCards[TOTAL_ORIGINAL].offsetLeft - allCards[0].offsetLeft;
+    }
+
+    // =============================================
+    // INIT : positionner au début du set 2 (milieu)
+    // =============================================
+    function initPosition() {
+        var oneSet = getOneSetWidth();
+        container.scrollLeft = oneSet;
+    }
+
+    // =============================================
+    // FLÈCHE : Scroller vers la prochaine carte.
+    // Le bord gauche de la carte cible = scrollLeft cible.
+    // La carte précédente est donc entièrement à gauche,
+    // hors de la zone visible.
+    // =============================================
+    arrowBtn.addEventListener('click', function() {
+        if (isResetting) return;
+        var currentScroll = container.scrollLeft;
+        var positions = getCardPositions();
+
+        // Trouver la prochaine carte dont le offsetLeft > currentScroll + 5px
+        var targetPos = null;
+        for (var i = 0; i < positions.length; i++) {
+            if (positions[i] > currentScroll + 5) {
+                targetPos = positions[i];
+                break;
+            }
+        }
+
+        if (targetPos !== null) {
+            smoothScrollTo(targetPos);
+        }
+    });
+
+    // =============================================
+    // SMOOTH SCROLL manuel (pour contrôle total)
+    // =============================================
+    var scrollAnimId = null;
+    function smoothScrollTo(target) {
+        if (scrollAnimId) cancelAnimationFrame(scrollAnimId);
+        var start = container.scrollLeft;
+        var distance = target - start;
+        var duration = 400; // ms
+        var startTime = null;
+
+        function step(timestamp) {
+            if (!startTime) startTime = timestamp;
+            var elapsed = timestamp - startTime;
+            var progress = Math.min(elapsed / duration, 1);
+            // easeOutCubic
+            var ease = 1 - Math.pow(1 - progress, 3);
+            container.scrollLeft = start + distance * ease;
+            if (progress < 1) {
+                scrollAnimId = requestAnimationFrame(step);
+            } else {
+                scrollAnimId = null;
+                container.scrollLeft = target;
+                checkInfiniteLoop();
+            }
+        }
+        scrollAnimId = requestAnimationFrame(step);
+    }
+
+    // =============================================
+    // BOUCLE INFINIE : repositionner silencieusement
+    // quand on atteint les bords du set 2
+    // =============================================
+    function checkInfiniteLoop() {
+        if (isResetting) return;
+        var oneSet = getOneSetWidth();
+        var scrollLeft = container.scrollLeft;
+
+        if (scrollLeft >= oneSet * 2 - 5) {
+            isResetting = true;
+            container.scrollLeft = scrollLeft - oneSet;
+            isResetting = false;
+        } else if (scrollLeft <= oneSet * 0.1) {
+            isResetting = true;
+            container.scrollLeft = scrollLeft + oneSet;
+            isResetting = false;
+        }
+    }
+
+    // =============================================
+    // SNAP MANUEL après swipe/touch : quand le scroll
+    // s'arrête, on snape à la carte la plus proche
+    // =============================================
+    var snapTimeout;
+    container.addEventListener('scroll', function() {
+        if (isResetting) return;
+        clearTimeout(snapTimeout);
+        snapTimeout = setTimeout(function() {
+            snapToNearest();
+            // Petit délai supplémentaire pour le loop check
+            setTimeout(checkInfiniteLoop, 50);
+        }, 100);
+    }, { passive: true });
+
+    function snapToNearest() {
+        if (isResetting || scrollAnimId) return;
+        var currentScroll = container.scrollLeft;
+        var positions = getCardPositions();
+        var closest = positions[0];
+        var minDist = Math.abs(positions[0] - currentScroll);
+
+        for (var i = 1; i < positions.length; i++) {
+            var dist = Math.abs(positions[i] - currentScroll);
+            if (dist < minDist) {
+                minDist = dist;
+                closest = positions[i];
+            }
+        }
+
+        // Si on est déjà quasiment aligné (< 3px), ne rien faire
+        if (minDist < 3) return;
+
+        smoothScrollTo(closest);
+    }
+
+    // =============================================
+    // VIDÉO NATIVE (mp4)
+    // <video preload="none"> : zéro octet vidéo au chargement,
+    // lecture uniquement au clic. Poster déjà chargé en lazy (thumb).
+    // =============================================
+    window.carouselTestimonialsPlayNativeVideo = function(button, videoUrl, isVertical) {
+        var card = button.closest('.carousel-testimonials-card');
+        var videoContainer = card.querySelector('.carousel-testimonials-video-container');
+        var thumbImg = card.querySelector('.carousel-testimonials-thumb');
+
+        isVideoPlaying = true;
+
+        if (thumbImg) thumbImg.classList.add('carousel-testimonials-hidden');
+        button.classList.add('carousel-testimonials-hidden');
+        videoContainer.classList.remove('carousel-testimonials-hidden');
+
+        videoContainer.innerHTML =
+            '<video autoplay playsinline controls preload="none" style="width:100%;height:100%;object-fit:cover;background:#000;" onended="carouselTestimonialsStopNativeVideo(this)">' +
+                '<source src="' + videoUrl + '" type="video/mp4">' +
+            '</video>' +
+            '<button class="carousel-testimonials-close-btn" onclick="event.stopPropagation(); carouselTestimonialsStopNativeVideo(this)">✕</button>';
+    };
+
+    window.carouselTestimonialsStopNativeVideo = function(element) {
+        var card = element.closest('.carousel-testimonials-card');
+        var vc = card.querySelector('.carousel-testimonials-video-container');
+        var thumbImg = card.querySelector('.carousel-testimonials-thumb');
+        var playBtn = card.querySelector('.carousel-testimonials-play-btn');
+
+        var video = vc.querySelector('video');
+        if (video) { video.pause(); video.src = ''; }
+
+        vc.innerHTML = '';
+        vc.classList.add('carousel-testimonials-hidden');
+        if (thumbImg) thumbImg.classList.remove('carousel-testimonials-hidden');
+        if (playBtn) playBtn.classList.remove('carousel-testimonials-hidden');
+
+        isVideoPlaying = false;
+    };
+
+    // =============================================
+    // VIDÉO YOUTUBE (iframe) — fallback
+    // =============================================
+    window.carouselTestimonialsPlayVideo = function(button, youtubeId, isVertical) {
+        var card = button.closest('.carousel-testimonials-card');
+        var videoContainer = card.querySelector('.carousel-testimonials-video-container');
+        var thumbImg = card.querySelector('.carousel-testimonials-thumb, .carousel-testimonials-thumbnail-img');
+        isVideoPlaying = true;
+        if (thumbImg) thumbImg.classList.add('carousel-testimonials-hidden');
+        button.classList.add('carousel-testimonials-hidden');
+        videoContainer.classList.remove('carousel-testimonials-hidden');
+        videoContainer.innerHTML = '<iframe src="https://www.youtube.com/embed/' + youtubeId + '?autoplay=1&playsinline=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;height:100%;border:none;"></iframe><button class="carousel-testimonials-close-btn" onclick="event.stopPropagation(); carouselTestimonialsStopVideo(this)">✕</button>';
+    };
+
+    window.carouselTestimonialsStopVideo = function(closeBtn) {
+        var card = closeBtn.closest('.carousel-testimonials-card');
+        var vc = card.querySelector('.carousel-testimonials-video-container');
+        var thumbImg = card.querySelector('.carousel-testimonials-thumb, .carousel-testimonials-thumbnail-img');
+        var playBtn = card.querySelector('.carousel-testimonials-play-btn, .carousel-testimonials-yt-play-btn');
+        vc.innerHTML = ''; vc.classList.add('carousel-testimonials-hidden');
+        if (thumbImg) thumbImg.classList.remove('carousel-testimonials-hidden');
+        if (playBtn) playBtn.classList.remove('carousel-testimonials-hidden');
+        isVideoPlaying = false;
+    };
+
+    window.carouselTestimonialsPause = function() {};
+
+    // =============================================
+    // INIT
+    // =============================================
+    function init() {
+        // Recalculer les cartes après clonage
+        allCards = track.querySelectorAll('.carousel-testimonials-card');
+        initPosition();
+    }
+
+    if (document.readyState === 'complete') {
+        init();
+    } else {
+        window.addEventListener('load', init);
+    }
+    setTimeout(init, 300);
+
+})();
+</script>

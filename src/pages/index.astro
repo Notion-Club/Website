@@ -1,0 +1,59 @@
+---
+/**
+ * index.astro — Page d'accueil. Assemble les 11 sections + les modals
+ * dans l'ordre défini par la spec (§6).
+ *
+ * Ordre : Navbar · Hero · VSL · Inclus(#inclus) · Témoignages(#temoignages)
+ *  · Programme(#contenu) · Qui suis-je(#qui-suis-je) · Logos · Étapes · FAQ(#faq)
+ *  · CTA Certif · Footer.
+ *
+ * Les CTA « Télécharger le programme » et « Rejoindre le Notion Club »
+ * sont rendus à l'intérieur de Programme.astro et Etapes.astro.
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+
+import Navbar from '@components/navbar/Navbar.astro';
+import Hero from '@components/hero/Hero.astro';
+import Vsl from '@components/vsl/Vsl.astro';
+import Inclus from '@components/inclus/Inclus.astro';
+import Temoignages from '@components/temoignages/Temoignages.astro';
+import Programme from '@components/programme/Programme.astro';
+import QuiSuisJe from '@components/qui-suis-je/QuiSuisJe.astro';
+import Logos from '@components/logos/Logos.astro';
+import Etapes from '@components/etapes/Etapes.astro';
+import Faq from '@components/faq/Faq.astro';
+import CtaCertif from '@components/cta-certif/CtaCertif.astro';
+import Footer from '@components/footer/Footer.astro';
+
+import ModalFillout from '@components/modals/ModalFillout.astro';
+import ModalProgramme from '@components/modals/ModalProgramme.astro';
+---
+
+<BaseLayout>
+  <Navbar />
+
+  <main>
+    <Hero />
+    <Vsl />
+    <Inclus />
+    <Temoignages />
+    <Programme />
+    <QuiSuisJe />
+    <Logos />
+    <Etapes />
+    <Faq />
+    <CtaCertif />
+  </main>
+
+  <Footer />
+
+  {/* ── Modals (rendus une fois, ouverts par les CTA via data-nc-modal) ── */}
+  <ModalFillout filloutId="cnYDjzJD2bus" />
+  <ModalFillout filloutId="ieyhzBxLQkus" />
+  <ModalProgramme />
+</BaseLayout>
+
+<script>
+  import { initModals } from '@scripts/modals';
+  initModals();
+</script>

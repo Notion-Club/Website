@@ -1,0 +1,384 @@
+---
+/**
+ * Etapes.astro — Annexe 6 : « Les prochaines étapes ».
+ *
+ * Timeline verticale de 3 étapes reliées par une ligne guide, avec une barre
+ * de progression (dégradé corail) qui se remplit au scroll. Chaque carte
+ * (blanche, titre + description) est révélée par un IntersectionObserver.
+ * La barre est calculée via getBoundingClientRect (updateProgress) sur les
+ * événements scroll / resize.
+ *
+ * Reconstruit fidèlement depuis block_etapes.html, en retirant Google Fonts,
+ * Tailwind Play CDN et Iconify. Couleur d'accent → var(--accent) ; police
+ * manuscrite 'Kalam' auto-hébergée globalement.
+ *
+ * CTA réutilisable (modal Fillout) rendu sous la timeline.
+ */
+import CtaPill from '@components/ui/CtaPill.astro';
+
+const etapes = [
+  {
+    title: 'Candidate en ligne',
+    body: 'Parle-nous de toi et de tes objectifs en cliquant ci-dessous.',
+  },
+  {
+    title: 'Entretien de sélection',
+    body:
+      'On voit ensemble si le Notion Club serait pertinent pour toi.<br>On ne sélectionne que les profils sérieux que nous pouvons accompagner pour apporter des (vraies) résultats.',
+  },
+  {
+    title: 'Bienvenue au Notion Club 🎉',
+    body:
+      "On commence par définir un plan d'action personnalisé pour que tu puisses rapidement atteindre les 5 000€ par mois et l'aventure commence.",
+  },
+];
+---
+
+<section class="etapes" id="programme">
+  <div class="etapes__noise" aria-hidden="true"></div>
+
+  <div class="etapes__inner">
+    <header class="etapes__header">
+      <h2 class="etapes__title">Les prochaines étapes</h2>
+      <p class="etapes__subtitle">
+        3 étapes clés pour lancer ta carrière de consultant Notion.
+      </p>
+    </header>
+
+    <div class="etapes__timeline">
+      <!-- Ligne guide verticale -->
+      <div class="etapes__guide" aria-hidden="true"></div>
+      <!-- Barre de progression animée -->
+      <div class="etapes__bar" id="timeline-bar" aria-hidden="true"></div>
+
+      <div class="etapes__container" id="timeline-container">
+        {
+          etapes.map((etape, i) => (
+            <div
+              class="timeline-item etapes__item"
+              id={i === 2 ? 'card-3' : undefined}
+            >
+              <div class="etapes__dot-wrap">
+                <div class="etapes__halo etapes__halo--outer" aria-hidden="true" />
+                <div class="etapes__halo etapes__halo--inner" aria-hidden="true" />
+                <div class="etapes__dot" aria-hidden="true" />
+              </div>
+
+              <div class="etapes__connector">
+                <div class="etapes__card">
+                  <h3 class="etapes__card-title">{etape.title}</h3>
+                  <p class="etapes__card-body" set:html={etape.body} />
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="etapes__cta">
+      <CtaPill
+        label="Rejoindre le Notion Club"
+        modal="fillout"
+        filloutId="cnYDjzJD2bus"
+        size="lg"
+      />
+    </div>
+  </div>
+</section>
+
+<style>
+  .etapes {
+    --etapes-text: #27272a;
+    --etapes-text-light: #52525b;
+    --etapes-border: #e5e7eb;
+    --etapes-border-light: #f4f4f5;
+    --etapes-shadow: rgba(0, 0, 0, 0.05);
+    --etapes-grad-from: rgba(224, 98, 90, 0.5);
+    --etapes-grad-to: rgba(224, 98, 90, 1);
+
+    position: relative;
+    padding: 0 24px;
+    overflow: visible;
+    z-index: 0;
+    isolation: isolate;
+  }
+
+  .etapes__noise {
+    position: absolute;
+    inset: 0;
+    background: url('https://grainy-gradients.vercel.app/noise.svg');
+    opacity: 0.02;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+  }
+
+  .etapes__inner {
+    max-width: 56rem; /* 4xl */
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+  }
+
+  /* ── Header ──────────────────────────────────────────────────────── */
+  .etapes__header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+  .etapes__title {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text-heading, #1e293b);
+    margin: 0 0 0.75rem;
+  }
+  .etapes__subtitle {
+    font-size: 1rem;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--etapes-text-light);
+    margin: 0;
+  }
+
+  /* ── Timeline wrapper ────────────────────────────────────────────── */
+  .etapes__timeline {
+    position: relative;
+    padding-left: 24px;
+  }
+  @media (min-width: 768px) {
+    .etapes__timeline {
+      padding-left: 48px;
+    }
+  }
+
+  /* Ligne guide verticale */
+  .etapes__guide {
+    position: absolute;
+    left: 39px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 9999px;
+    background-color: var(--etapes-border-light);
+  }
+  /* Barre de progression */
+  .etapes__bar {
+    position: absolute;
+    left: 39px;
+    top: 0;
+    width: 3px;
+    height: 0%;
+    border-radius: 9999px;
+    background: linear-gradient(
+      to bottom,
+      var(--etapes-grad-from),
+      var(--etapes-grad-to)
+    );
+    transition: height 0.1s ease-out;
+  }
+  @media (min-width: 768px) {
+    .etapes__guide,
+    .etapes__bar {
+      left: 63px;
+    }
+  }
+
+  .etapes__container {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem; /* space-y-16 */
+  }
+
+  /* ── Item (révélé par l'observer) ────────────────────────────────── */
+  .etapes__item {
+    display: flex;
+    align-items: center;
+    position: relative;
+    opacity: 0.5;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .etapes__item.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── Point + halos ───────────────────────────────────────────────── */
+  .etapes__dot-wrap {
+    position: relative;
+    z-index: 10;
+    flex: none;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 48px;
+  }
+  @media (min-width: 768px) {
+    .etapes__dot-wrap {
+      margin-right: 64px;
+    }
+  }
+  .etapes__halo {
+    position: absolute;
+    border-radius: 9999px;
+    transition: background-color 0.5s ease;
+  }
+  .etapes__halo--outer {
+    width: 60px;
+    height: 60px;
+    background-color: color-mix(in srgb, var(--accent) 5%, transparent);
+  }
+  .etapes__halo--inner {
+    width: 36px;
+    height: 36px;
+    background-color: color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+  .etapes__dot {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    border-radius: 9999px;
+    background-color: var(--accent);
+    box-shadow: 0 1px 2px 0 color-mix(in srgb, var(--accent) 40%, transparent);
+    transition: transform 0.3s ease;
+  }
+  .etapes__item:hover .etapes__dot {
+    transform: scale(1.1);
+  }
+
+  /* ── Connecteur + carte ──────────────────────────────────────────── */
+  .etapes__connector {
+    flex: 1;
+    position: relative;
+  }
+  .etapes__connector::before {
+    content: '';
+    position: absolute;
+    left: -16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 2px;
+    background: var(--etapes-border);
+    z-index: 0;
+  }
+
+  .etapes__card {
+    position: relative;
+    z-index: 10;
+    padding: 2rem;
+    border-radius: 1rem;
+    background-color: var(--card, #ffffff);
+    border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+    box-shadow: 0 1px 3px 0 var(--etapes-shadow);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .etapes__card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  }
+  .etapes__card-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--etapes-text);
+    margin: 0 0 0.75rem;
+  }
+  .etapes__card-body {
+    font-size: 0.875rem;
+    line-height: 1.625;
+    font-weight: 300;
+    color: var(--etapes-text-light);
+    margin: 0;
+  }
+  @media (min-width: 768px) {
+    .etapes__card-body {
+      font-size: 1rem;
+    }
+  }
+
+  /* ── CTA ─────────────────────────────────────────────────────────── */
+  .etapes__cta {
+    display: flex;
+    justify-content: center;
+    margin-top: 4rem;
+  }
+
+  /* ── Reduced motion : tout révélé, pas de transform ──────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .etapes__item {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .etapes__bar {
+      transition: none;
+    }
+    .etapes__dot,
+    .etapes__card,
+    .etapes__halo {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  function initEtapes() {
+    const timelineItems =
+      document.querySelectorAll<HTMLElement>('.timeline-item');
+    const timelineBar = document.getElementById('timeline-bar');
+    const container = document.getElementById('timeline-container');
+
+    if (!timelineItems.length) return;
+
+    // --- IntersectionObserver : révélation des cartes ---
+    const observerOptions: IntersectionObserverInit = {
+      root: null,
+      rootMargin: '0px 0px -20% 0px',
+      threshold: 0.1,
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, observerOptions);
+
+    timelineItems.forEach((item) => observer.observe(item));
+
+    // --- Progression au scroll (verbatim) ---
+    function updateProgress() {
+      if (!container || !timelineBar) return;
+
+      const containerRect = container.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+
+      const offsetTop = windowHeight / 2;
+      const startPoint = containerRect.top - offsetTop;
+      const totalHeight = containerRect.height;
+
+      let percentage = 0;
+      if (startPoint < 0) {
+        percentage = (Math.abs(startPoint) / totalHeight) * 100;
+      }
+      percentage = Math.min(Math.max(percentage, 0), 100);
+
+      timelineBar.style.height = `${percentage}%`;
+    }
+
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    window.addEventListener('resize', updateProgress);
+    updateProgress();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEtapes);
+  } else {
+    initEtapes();
+  }
+</script>
