@@ -1,0 +1,65 @@
+---
+/**
+ * BaseLayout.astro — Coquille HTML de la landing.
+ *
+ * Responsabilités :
+ *  - <head> + meta SEO / Open Graph
+ *  - Import unique des styles globaux (tokens → fonts → reset)
+ *  - Halos corail fixés en fond (signature visuelle)
+ *  - <slot /> pour les sections de la page
+ *
+ * Les dépendances (Tailwind, polices) sont configurées UNE SEULE FOIS au niveau
+ * projet — jamais rechargées par section (contrairement aux blocs SIO d'origine).
+ */
+import '@styles/tokens.css';
+import '@styles/fonts.css';
+import '@styles/global.css';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  /** Chemin de l'image Open Graph (dans /public ou asset buildé). */
+  ogImage?: string;
+}
+
+const {
+  title = 'Notion Club — Deviens le Consultant Notion que les entreprises recherchent',
+  description = "On t'accompagne à devenir expert sur Notion jusqu'à atteindre les 5 000€ par mois.",
+  ogImage = '/og-image.jpg', // PLACEHOLDER_OG — à fournir par Théo
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Préchargement des polices critiques (LCP du hero) -->
+    <link
+      rel="preload"
+      href="/fonts/inter-variable.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+  </head>
+  <body>
+    <!-- Halos corail diffus, fixés derrière tout le contenu -->
+    <div class="nc-halos" aria-hidden="true"></div>
+
+    <slot />
+  </body>
+</html>

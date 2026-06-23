@@ -1,0 +1,172 @@
+---
+// Logos.astro — Scroller de logos, marquee infini 22 logos (Annexe 5)
+// Marquee JS-driven (requestAnimationFrame), translateX continu.
+// NOTE : la source utilise des <img> SVG distants (CloudFront), pas du SVG inline.
+// Set 2 = duplication du Set 1 pour la boucle infinie.
+
+const logos = [
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/69940fcb19485_lg1.svg", alt: "Logo 1" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/69940fd8eb2c9_lg2.svg", alt: "Logo 2" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/69940fe6839e8_lg3.svg", alt: "Logo 3" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/69940fef55a32_lg4.svg", alt: "Logo 4" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/6994100b4f070_lg5.svg", alt: "Logo 5" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/699410155b5e7_lg6.svg", alt: "Logo 6" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/6994101c7e019_lg7.svg", alt: "Logo 7" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/699410244c457_lg8.svg", alt: "Logo 8" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/6994102b88af4_lg9.svg", alt: "Logo 9" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/6994103379256_lg10.svg", alt: "Logo 10" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/6994103abad40_lg11.svg", alt: "Logo 11" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/699410424f50f_lg12.svg", alt: "Logo 12" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/699410494d83e_lg13.svg", alt: "Logo 13" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/699410576c84d_lg14.svg", alt: "Logo 14" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/699410600423a_lg15.svg", alt: "Logo 15" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/69941066a9e08_lg16.svg", alt: "Logo 16" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/6994106ea5578_lg17.svg", alt: "Logo 17" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/69941074d231a_lg18.svg", alt: "Logo 18" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/6994107c71bb9_lg19.svg", alt: "Logo 19" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/6994108384b3d_lg20.svg", alt: "Logo 20" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/6994108b0c97e_lg21.svg", alt: "Logo 21" },
+  { src: "https://d1yei2z3i6k35z.cloudfront.net/1970629/699410958d7c7_lg22.svg", alt: "Logo 22" },
+];
+---
+
+<section class="logo-carousel-wrapper">
+  <div class="logo-carousel-track" id="logoCarousel">
+    {/* Set 1 */}
+    {logos.map((logo) => (
+      // PLACEHOLDER : logo SVG distant (CloudFront) — remplacer par un asset local si besoin
+      <img src={logo.src} alt={logo.alt} class="logo-item" loading="lazy" />
+    ))}
+    {/* Set 2 : duplication pour boucle infinie */}
+    {logos.map((logo) => (
+      // PLACEHOLDER : logo SVG distant (CloudFront) — remplacer par un asset local si besoin
+      <img src={logo.src} alt={logo.alt} class="logo-item" loading="lazy" />
+    ))}
+  </div>
+</section>
+
+<style>
+  .logo-carousel-wrapper {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    padding: 40px 0;
+    margin-top: -50px;
+    z-index: 1;
+  }
+  .logo-carousel-track {
+    display: flex;
+    gap: 60px;
+    align-items: center;
+  }
+  .logo-item {
+    height: 100px;
+    width: auto;
+    flex-shrink: 0;
+    object-fit: contain;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+  @media (max-width: 768px) {
+    .logo-item {
+      height: 80px;
+    }
+    .logo-carousel-track {
+      gap: 50px;
+    }
+  }
+  @media (max-width: 480px) {
+    .logo-item {
+      height: 60px;
+    }
+    .logo-carousel-track {
+      gap: 40px;
+    }
+    .logo-carousel-wrapper {
+      padding: 20px 0;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    var track = document.getElementById("logoCarousel");
+    if (!track) return;
+
+    // prefers-reduced-motion : ne pas animer le marquee.
+    var reduceMotion =
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) return;
+
+    var scrollPosition = 0;
+
+    var isMobile = window.innerWidth <= 480;
+    var isTablet = window.innerWidth > 480 && window.innerWidth <= 768;
+    var scrollSpeed;
+
+    if (isMobile) {
+      scrollSpeed = 1.5;
+    } else if (isTablet) {
+      scrollSpeed = 2.2;
+    } else {
+      scrollSpeed = 2.5;
+    }
+
+    var gapSize = 60;
+    var totalSetWidth = 0;
+    var isAnimating = false;
+
+    function init() {
+      var logos = track.querySelectorAll(".logo-item");
+      var loadedCount = 0;
+      var totalLogos = logos.length / 2;
+
+      function checkLoaded() {
+        loadedCount++;
+        if (loadedCount >= totalLogos) {
+          for (var i = 0; i < totalLogos; i++) {
+            totalSetWidth += logos[i].offsetWidth + gapSize;
+          }
+          if (!isAnimating) {
+            isAnimating = true;
+            startScrolling();
+          }
+        }
+      }
+
+      for (var i = 0; i < totalLogos; i++) {
+        if (logos[i].complete) {
+          checkLoaded();
+        } else {
+          logos[i].addEventListener("load", checkLoaded);
+        }
+      }
+    }
+
+    function startScrolling() {
+      function animate() {
+        scrollPosition += scrollSpeed;
+        if (scrollPosition >= totalSetWidth) {
+          scrollPosition = 0;
+        }
+        track.style.transform = "translateX(-" + scrollPosition + "px)";
+        requestAnimationFrame(animate);
+      }
+      animate();
+    }
+
+    if (isMobile) {
+      gapSize = 40;
+    } else if (isTablet) {
+      gapSize = 50;
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+  })();
+</script>

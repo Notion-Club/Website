@@ -1,0 +1,373 @@
+---
+/**
+ * ModalProgramme.astro — Modal « Télécharger le programme complet ».
+ *
+ * FUSION (cf. prompt §8) :
+ *   • Coquille + animation iMessage « écriture »  = opt-in Louis #2 (annexe 9)
+ *   • Champs prénom/email/téléphone + dropdown pays = opt-in Louis #1 (annexe 8)
+ *
+ * ⚠️ ANNEXES 8 & 9 NON FOURNIES par Théo (placeholders dans le .md source).
+ *    Cette implémentation est une reconstruction FONCTIONNELLE d'après la spec.
+ *    → À REMPLACER par le code VERBATIM de Théo dès réception :
+ *        - le moteur dropdown pays / drapeaux SVG / validation FR-BE-CH (annexe 8)
+ *        - la coquille + timings exacts de l'anim iMessage (annexe 9)
+ *    Voir docs/TODO-THEO.md.
+ *
+ * ⚠️ BACKEND À VÉRIFIER (cf. prompt §8) : le funnel systeme.io 40626154 est
+ *    partagé avec l'étude de cas Louis. Si le programme doit partir dans un
+ *    funnel distinct, changer l'endpoint + le script distant SIO ci-dessous.
+ */
+import Modal from './Modal.astro';
+
+// Endpoint + script SIO (à confirmer — voir docs/TODO-THEO.md)
+const SIO_ENDPOINT = 'https://systeme.io/embedded/40626154/subscription';
+---
+
+<Modal id="modal-programme" size="form" labelledby="modal-programme-title">
+  <div class="mp">
+    <!-- ── Animation iMessage (reset à chaque ouverture via modals.ts) ── -->
+    <div class="mp__imessage" data-imessage-anim aria-hidden="true">
+      <img
+        class="mp__avatar"
+        src="https://res.cloudinary.com/dceobxyts/image/upload/v1/notion-club/avatar-imessage"
+        alt=""
+        width="40"
+        height="40"
+        loading="lazy"
+      />
+      <!-- PLACEHOLDER_AVATAR_IMESSAGE — URL Cloudinary Louis, à confirmer -->
+      <div class="mp__bubble">
+        <span class="mp__typing">
+          <i></i><i></i><i></i>
+        </span>
+        <span class="mp__bubble-text">Voici ton programme 👇</span>
+      </div>
+    </div>
+
+    <!-- ── En-tête ── -->
+    <h2 class="mp__title" id="modal-programme-title">
+      Où dois-je t'envoyer le<br />programme complet ?
+    </h2>
+
+    <!-- ── Formulaire 3 champs (moteur annexe 8 à coller verbatim) ── -->
+    <form class="mp__form" action={SIO_ENDPOINT} method="post">
+      <input type="hidden" name="phone_number" id="mp-phone-hidden" />
+
+      <div class="mp__field">
+        <input type="text" name="first_name" placeholder="Ton prénom" required autocomplete="given-name" />
+      </div>
+
+      <div class="mp__field">
+        <input type="email" name="email" placeholder="Ton adresse email" required autocomplete="email" />
+      </div>
+
+      <!--
+        PLACEHOLDER_DROPDOWN_PAYS — version fonctionnelle FR/BE/CH.
+        À remplacer par le moteur verbatim de l'annexe 8 (drapeaux SVG inline,
+        recherche, validation stricte, liste complète des pays).
+      -->
+      <div class="mp__field mp__phone">
+        <button type="button" class="mp__country" id="mp-country-btn" aria-haspopup="listbox" aria-expanded="false">
+          <span class="mp__flag" data-flag>🇫🇷</span>
+          <span class="mp__prefix" data-prefix>+33</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6" /></svg>
+        </button>
+        <input type="tel" id="mp-phone" placeholder="Numéro de téléphone" inputmode="tel" required />
+        <ul class="mp__country-list" id="mp-country-list" role="listbox" hidden>
+          <li role="option" data-prefix="+33" data-flag="🇫🇷" data-min="9" data-max="9">🇫🇷 France <span>+33</span></li>
+          <li role="option" data-prefix="+32" data-flag="🇧🇪" data-min="8" data-max="9">🇧🇪 Belgique <span>+32</span></li>
+          <li role="option" data-prefix="+41" data-flag="🇨🇭" data-min="9" data-max="9">🇨🇭 Suisse <span>+41</span></li>
+        </ul>
+      </div>
+
+      <button type="submit" class="mp__submit">
+        Recevoir le programme complet
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+      </button>
+
+      <p class="mp__trust">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z" /></svg>
+        Tes données sont 100 % sécurisées.
+      </p>
+    </form>
+  </div>
+</Modal>
+
+<!--
+  Script distant systeme.io — À INCLURE UNE SEULE FOIS (voir prompt §8).
+  Décommenter une fois le funnel confirmé :
+  <script src="https://www.theogouman.fr/public/remote/page/406261541c78a21f2a0a1a462ebe78f58edea69f.js"></script>
+-->
+
+<script>
+  /*
+   * Moteur dropdown pays — PLACEHOLDER FONCTIONNEL (FR/BE/CH).
+   * À remplacer par le <script> verbatim de l'annexe 8 dès réception.
+   * Rôle : sélection pays → préfixe + drapeau, validation longueur,
+   * concaténation préfixe + numéro → champ caché #mp-phone-hidden.
+   */
+  function initProgrammeForm() {
+    const btn = document.getElementById('mp-country-btn');
+    const list = document.getElementById('mp-country-list');
+    const flag = btn?.querySelector('[data-flag]');
+    const prefixEl = btn?.querySelector('[data-prefix]');
+    const phone = document.getElementById('mp-phone') as HTMLInputElement | null;
+    const hidden = document.getElementById('mp-phone-hidden') as HTMLInputElement | null;
+    if (!btn || !list || !phone || !hidden || !flag || !prefixEl) return;
+
+    let current = { prefix: '+33', min: 9, max: 9 };
+
+    btn.addEventListener('click', () => {
+      const open = !list.hasAttribute('hidden');
+      if (open) {
+        list.setAttribute('hidden', '');
+        btn.setAttribute('aria-expanded', 'false');
+      } else {
+        list.removeAttribute('hidden');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+
+    list.querySelectorAll<HTMLElement>('[role="option"]').forEach((opt) => {
+      opt.addEventListener('click', () => {
+        current = {
+          prefix: opt.dataset.prefix!,
+          min: Number(opt.dataset.min),
+          max: Number(opt.dataset.max),
+        };
+        flag.textContent = opt.dataset.flag!;
+        prefixEl.textContent = opt.dataset.prefix!;
+        list.setAttribute('hidden', '');
+        btn.setAttribute('aria-expanded', 'false');
+        phone.focus();
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!btn.contains(e.target as Node) && !list.contains(e.target as Node)) {
+        list.setAttribute('hidden', '');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Validation + concaténation au submit.
+    phone.closest('form')?.addEventListener('submit', (e) => {
+      const digits = phone.value.replace(/\D/g, '').replace(/^0/, '');
+      if (digits.length < current.min || digits.length > current.max) {
+        e.preventDefault();
+        phone.setCustomValidity('Numéro invalide pour ce pays.');
+        phone.reportValidity();
+        return;
+      }
+      phone.setCustomValidity('');
+      hidden.value = current.prefix + digits;
+    });
+    phone.addEventListener('input', () => phone.setCustomValidity(''));
+  }
+
+  document.addEventListener('DOMContentLoaded', initProgrammeForm);
+</script>
+
+<style>
+  .mp {
+    padding: 40px 28px 28px;
+  }
+
+  /* ── iMessage ── */
+  .mp__imessage {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .mp__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--accent-soft);
+    flex-shrink: 0;
+  }
+  .mp__bubble {
+    position: relative;
+    background: #f1f1f3;
+    border-radius: 18px 18px 18px 5px;
+    padding: 12px 16px;
+    min-width: 70px;
+    max-width: 180px;
+    overflow: hidden;
+    animation: mp-bubble-grow 0.6s var(--ease-imessage, cubic-bezier(0.65, 0, 0.35, 1)) 1.7s both;
+  }
+  @keyframes mp-bubble-grow {
+    from { max-width: 70px; }
+    to { max-width: 180px; }
+  }
+  .mp__typing {
+    display: inline-flex;
+    gap: 4px;
+    animation: mp-typing-out 0.2s ease 2s forwards;
+  }
+  .mp__typing i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #b0b0b6;
+    animation: mp-typing 1.4s ease-in-out infinite;
+  }
+  .mp__typing i:nth-child(2) { animation-delay: 0.2s; }
+  .mp__typing i:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes mp-typing {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-4px); opacity: 1; }
+  }
+  @keyframes mp-typing-out {
+    to { opacity: 0; display: none; }
+  }
+  .mp__bubble-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+    opacity: 0;
+    animation: mp-text-in 0.3s ease 2s forwards;
+  }
+  @keyframes mp-text-in {
+    to { opacity: 1; }
+  }
+
+  /* ── Titre ── */
+  .mp__title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-heading);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 24px;
+  }
+
+  /* ── Form ── */
+  .mp__form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .mp__field input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: inherit;
+    background: #fafafa;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .mp__field input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: #fff;
+  }
+
+  .mp__phone {
+    position: relative;
+    display: flex;
+    gap: 8px;
+  }
+  .mp__country {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #fafafa;
+    font-size: 15px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .mp__country svg {
+    width: 16px;
+    height: 16px;
+    color: #94a3b8;
+  }
+  .mp__phone input {
+    flex: 1;
+  }
+  .mp__country-list {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 5;
+    width: 100%;
+    list-style: none;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.18);
+    overflow: hidden;
+  }
+  .mp__country-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .mp__country-list li span {
+    margin-left: auto;
+    color: var(--text-muted);
+  }
+  .mp__country-list li:hover {
+    background: var(--accent-soft);
+  }
+
+  .mp__submit {
+    margin-top: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 12px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    box-shadow: 0 8px 20px -6px rgba(224, 98, 90, 0.45);
+    transition: transform 0.2s var(--ease-signature);
+  }
+  .mp__submit:hover {
+    transform: translateY(-1px);
+  }
+  .mp__submit svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .mp__trust {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .mp__trust svg {
+    width: 14px;
+    height: 14px;
+    color: var(--accent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mp__bubble,
+    .mp__typing,
+    .mp__typing i,
+    .mp__bubble-text {
+      animation: none;
+    }
+    .mp__bubble { max-width: 180px; }
+    .mp__typing { display: none; }
+    .mp__bubble-text { opacity: 1; }
+  }
+</style>

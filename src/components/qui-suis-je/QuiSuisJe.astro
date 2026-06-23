@@ -1,0 +1,200 @@
+---
+/**
+ * QuiSuisJe.astro — Section bio Théo (RECONSTRUITE d'après la spec §9.2, pas de source).
+ *
+ * Carte large 2 colonnes :
+ *  - Gauche : photo N&B détourée + pill nom posée dessus.
+ *  - Droite : 4 écussons certif + titre « Qui suis-je ? » + bio 3 paragraphes.
+ * Bandeau logos partenaires en bas (Master IA, X, popmood).
+ */
+
+// Écussons de certification — PLACEHOLDER : fournir les vrais badges.
+const certifs = [
+  'PLACEHOLDER_CERTIF_1',
+  'PLACEHOLDER_CERTIF_2',
+  'PLACEHOLDER_CERTIF_3',
+  'PLACEHOLDER_CERTIF_4',
+];
+---
+
+<section class="qsj" id="qui-suis-je">
+  <div class="qsj__card">
+    <!-- Colonne photo -->
+    <div class="qsj__photo">
+      <img
+        src="https://placehold.co/520x640/1a1a1a/ffffff?text=Th%C3%A9o+Gouman"
+        alt="Théo Gouman"
+        width="520"
+        height="640"
+        loading="lazy"
+      />
+      <!-- PLACEHOLDER_PHOTO_THEO : photo N&B détourée à fournir -->
+      <div class="qsj__name-pill">
+        <strong>Théo Gouman</strong>
+        <span>Expert certifié Notion &amp; Coach</span>
+      </div>
+    </div>
+
+    <!-- Colonne contenu -->
+    <div class="qsj__content">
+      <div class="qsj__certifs">
+        {certifs.map(() => (
+          <div class="qsj__certif" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <circle cx="12" cy="10" r="6" />
+              <path d="M9 15l-1.5 6L12 18l4.5 3L15 15" />
+            </svg>
+          </div>
+        ))}
+        <!-- PLACEHOLDER_CERTIFS : 4 écussons de certification Notion -->
+      </div>
+
+      <h2 class="qsj__title">Qui suis-je ?</h2>
+
+      <div class="qsj__bio">
+        <p>
+          Je suis Théo Gouman, consultant Notion multi-certifié. Depuis 2022
+          j'ai accompagné +100 TPE / PME à gagner en efficacité grâce à Notion.
+        </p>
+        <p>J'ai créé le Notion Club en partant d'un constat simple :</p>
+        <p>
+          <span class="qsj__hand">👉</span> Beaucoup d'entreprises ont besoin
+          d'un consultant, mais il en manque. Depuis 2025 je forme donc les
+          consultants de demain aux méthodes que j'ai appliquées pour qu'ils
+          vivent de cette activité en aidant ces entreprises.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bandeau logos partenaires -->
+  <div class="qsj__partners">
+    <span>Master IA</span>
+    <span>X</span>
+    <span>popmood</span>
+    <!-- PLACEHOLDER_PARTNERS : logos Master IA / X / popmood à fournir -->
+  </div>
+</section>
+
+<style>
+  .qsj {
+    padding: 64px 20px;
+    max-width: var(--container-max);
+    margin: 0 auto;
+  }
+
+  .qsj__card {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+  }
+  @media (min-width: 900px) {
+    .qsj__card {
+      grid-template-columns: 0.85fr 1.15fr;
+    }
+  }
+
+  /* Photo */
+  .qsj__photo {
+    position: relative;
+    min-height: 360px;
+    background: #1a1a1a;
+  }
+  .qsj__photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(100%);
+  }
+  .qsj__name-pill {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    padding: 12px 20px;
+    border-radius: 16px;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    color: #fff;
+  }
+  .qsj__name-pill strong {
+    font-size: 17px;
+    font-weight: 600;
+  }
+  .qsj__name-pill span {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  /* Contenu */
+  .qsj__content {
+    padding: 36px 28px;
+  }
+  @media (min-width: 768px) {
+    .qsj__content {
+      padding: 48px 44px;
+    }
+  }
+
+  .qsj__certifs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .qsj__certif {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .qsj__certif svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .qsj__title {
+    font-size: clamp(26px, 4vw, 40px);
+    font-weight: 700;
+    color: var(--text-heading);
+    letter-spacing: -0.025em;
+    margin-bottom: 20px;
+  }
+
+  .qsj__bio {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .qsj__bio p {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--text-secondary);
+  }
+  .qsj__hand {
+    font-style: normal;
+  }
+
+  /* Partenaires */
+  .qsj__partners {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-top: 36px;
+    opacity: 0.55;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--text-secondary);
+  }
+</style>

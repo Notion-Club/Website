@@ -1,0 +1,82 @@
+---
+/**
+ * SectionHeader.astro — Pattern d'en-tête de section récurrent.
+ *
+ *   [ badge pill corail ]   ← optionnel
+ *        Titre H2 bold       ← 2 lignes possibles via <br> dans le slot/prop
+ *
+ * Utilisé par : Inclus, Témoignages, Programme, Étapes, FAQ…
+ * Le titre peut contenir du HTML (ex. <br>) → passé via `titleHtml`, ou via slot.
+ */
+export interface Props {
+  badge?: string;
+  /** Titre en texte simple (avec <br> autorisé). Sinon, utiliser le slot. */
+  titleHtml?: string;
+  /** Sous-titre gris optionnel sous le titre. */
+  subtitle?: string;
+  align?: 'center' | 'left';
+}
+const { badge, titleHtml, subtitle, align = 'center' } = Astro.props;
+---
+
+<header class:list={['sh', `sh--${align}`]}>
+  {badge && <span class="sh__badge">{badge}</span>}
+  <h2 class="sh__title">
+    {titleHtml ? <Fragment set:html={titleHtml} /> : <slot />}
+  </h2>
+  {subtitle && <p class="sh__subtitle">{subtitle}</p>}
+</header>
+
+<style>
+  .sh {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .sh--center {
+    text-align: center;
+    align-items: center;
+  }
+  .sh--left {
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  .sh__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 18px;
+    border-radius: var(--radius-pill);
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin-bottom: 20px;
+  }
+
+  .sh__title {
+    font-size: clamp(26px, 4.5vw, 48px);
+    font-weight: 700;
+    color: var(--text-heading);
+    letter-spacing: -0.025em;
+    line-height: 1.08;
+  }
+
+  .sh__subtitle {
+    margin-top: 16px;
+    font-size: clamp(15px, 2vw, 18px);
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 620px;
+  }
+
+  @media (min-width: 768px) {
+    .sh__badge {
+      margin-bottom: 28px;
+    }
+  }
+</style>

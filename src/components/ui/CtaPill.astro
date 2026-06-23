@@ -1,0 +1,147 @@
+---
+/**
+ * CtaPill.astro — Bouton CTA corail réutilisable.
+ *
+ * Signature : pill corail + reflet « shine » qui balaie en boucle +
+ * double flèche qui slide au hover. Câblé aux modals via data-attributes.
+ *
+ * Usage :
+ *   <CtaPill label="Rejoindre le Notion Club" modal="fillout" filloutId="cnYDjzJD2bus" />
+ *   <CtaPill label="Télécharger le programme complet" modal="programme" />
+ *   <CtaPill label="Voir" href="#contenu" />
+ *
+ * Le câblage modal est lu par src/scripts/modals.ts (data-nc-modal / data-fillout-id).
+ */
+export interface Props {
+  label: string;
+  /** Cible : 'fillout' (avec filloutId) | 'programme' | rien (simple lien href). */
+  modal?: 'fillout' | 'programme';
+  filloutId?: string;
+  href?: string;
+  size?: 'md' | 'lg';
+  class?: string;
+}
+const { label, modal, filloutId, href, size = 'md', class: extraClass } = Astro.props;
+
+const Tag = href && !modal ? 'a' : 'button';
+const attrs: Record<string, string> = {};
+if (href && !modal) attrs.href = href;
+if (modal) {
+  attrs['data-nc-modal'] = modal;
+  if (filloutId) attrs['data-fillout-id'] = filloutId;
+  attrs.type = 'button';
+}
+---
+
+<Tag class:list={['cta', `cta--${size}`, extraClass]} {...attrs}>
+  <span class="cta__shine" aria-hidden="true"></span>
+  <span class="cta__label">{label}</span>
+  <span class="cta__arrows" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14M13 6l6 6-6 6" />
+    </svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14M13 6l6 6-6 6" />
+    </svg>
+  </span>
+</Tag>
+
+<style>
+  .cta {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 26px;
+    border: none;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    color: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    overflow: hidden;
+    box-shadow: 0 8px 24px -6px rgba(224, 98, 90, 0.45), 0 2px 6px rgba(224, 98, 90, 0.25);
+    transition: transform 0.25s var(--ease-signature), box-shadow 0.25s var(--ease-signature);
+    cursor: pointer;
+  }
+  .cta--lg {
+    padding: 17px 32px;
+    font-size: 16px;
+  }
+  .cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 32px -6px rgba(224, 98, 90, 0.5), 0 3px 8px rgba(224, 98, 90, 0.28);
+  }
+  .cta:active {
+    transform: translateY(0);
+  }
+
+  /* Reflet animé qui balaie en continu */
+  .cta__shine {
+    position: absolute;
+    top: 0;
+    left: -60%;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(
+      100deg,
+      transparent,
+      rgba(255, 255, 255, 0.35),
+      transparent
+    );
+    transform: skewX(-18deg);
+    animation: cta-shine 3.6s ease-in-out infinite;
+  }
+  @keyframes cta-shine {
+    0%, 18% { left: -60%; }
+    55%, 100% { left: 140%; }
+  }
+
+  .cta__label {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Double flèche : la 1re sort, la 2de entre, au hover */
+  .cta__arrows {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    width: 18px;
+    height: 18px;
+    overflow: hidden;
+  }
+  .cta__arrows svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 18px;
+    height: 18px;
+    transition: transform 0.4s var(--ease-signature);
+  }
+  .cta__arrows svg:nth-child(1) {
+    transform: translateX(0);
+  }
+  .cta__arrows svg:nth-child(2) {
+    transform: translateX(-130%);
+  }
+  .cta:hover .cta__arrows svg:nth-child(1) {
+    transform: translateX(130%);
+  }
+  .cta:hover .cta__arrows svg:nth-child(2) {
+    transform: translateX(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta__shine {
+      animation: none;
+      display: none;
+    }
+    .cta,
+    .cta__arrows svg {
+      transition: none;
+    }
+  }
+</style>

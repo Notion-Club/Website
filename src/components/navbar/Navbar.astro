@@ -1,0 +1,510 @@
+---
+// Navbar — pill flottante glassmorphism + panneau burger mobile.
+// Reconstruction fidèle de block_navbar.html (Annexe 1).
+// Le wrapper est nativement position:fixed (.nc-menu-wrapper).
+---
+
+<div class="nc-overlay-bg" id="nc-overlay-bg"></div>
+
+<div class="nc-menu-wrapper">
+  <nav class="nc-menu-nav" id="nc-nav">
+
+    <div class="nc-topbar">
+      <a href="javascript:void(0)" class="nc-logo-link" id="nc-logo-top">
+        <!-- PLACEHOLDER_LOGO : ré-héberger sur le repo -->
+        <img
+          src="https://d1yei2z3i6k35z.cloudfront.net/1970629/696f4023d75d6_ExtensionPhotoshop_Image1.png"
+          alt="Logo"
+          class="nc-logo"
+          loading="eager"
+          width="126"
+          height="42"
+        />
+      </a>
+      <div class="nc-desktop-links">
+        <a href="#inclus">Programme</a>
+        <a href="#temoignages">Témoignage</a>
+        <a href="#contenu">Contenu</a>
+        <a href="#qui-suis-je">Qui suis-je ?</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <button class="nc-burger-btn" id="nc-burger" aria-label="Menu" aria-expanded="false">
+        <span class="nc-burger-bar nc-burger-bar-1"></span>
+        <span class="nc-burger-bar nc-burger-bar-2"></span>
+        <span class="nc-burger-bar nc-burger-bar-3"></span>
+      </button>
+    </div>
+
+    <div class="nc-expand" id="nc-expand">
+      <div class="nc-expand-inner">
+        <div class="nc-separator"></div>
+        <a href="#inclus" class="nc-menu-item nc-menu-item-0"><span>Programme</span><svg class="nc-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <a href="#temoignages" class="nc-menu-item nc-menu-item-1"><span>Témoignage</span><svg class="nc-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <a href="#contenu" class="nc-menu-item nc-menu-item-2"><span>Contenu</span><svg class="nc-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <a href="#qui-suis-je" class="nc-menu-item nc-menu-item-3"><span>Qui suis-je ?</span><svg class="nc-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <a href="#faq" class="nc-menu-item nc-menu-item-4"><span>FAQ</span><svg class="nc-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 9l6 6 6-6"></path></svg></a>
+      </div>
+    </div>
+
+  </nav>
+</div>
+
+<style>
+.nc-menu-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100vw;
+  max-width: 100vw;
+  z-index: 9999;
+  padding: 16px 24px;
+  pointer-events: none;
+  box-sizing: border-box;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+  margin: 0;
+}
+
+@media (max-width: 767px) {
+  .nc-menu-wrapper {
+    padding: 12px 16px;
+  }
+}
+
+.nc-menu-nav {
+  pointer-events: auto;
+  margin: 0 auto;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+  overflow: hidden;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+@media (min-width: 768px) {
+  .nc-menu-nav {
+    border-radius: 9999px;
+    max-width: none;
+    width: auto;
+    display: inline-flex;
+    flex-direction: column;
+  }
+  .nc-menu-wrapper {
+    text-align: center;
+  }
+}
+
+@media (max-width: 767px) {
+  .nc-menu-nav {
+    border-radius: 24px;
+    max-width: 720px;
+  }
+}
+
+.nc-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 24px 8px 14px;
+  position: relative;
+  z-index: 2;
+}
+
+@media (min-width: 768px) {
+  .nc-topbar {
+    padding: 8px 28px 8px 16px;
+    gap: 28px;
+  }
+}
+
+.nc-logo-link {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.nc-logo {
+  height: 36px;
+  width: auto;
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .nc-logo {
+    height: 42px;
+  }
+}
+
+.nc-desktop-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.nc-desktop-links a {
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #52525b;
+}
+
+.nc-desktop-links a:hover {
+  color: #18181b;
+}
+
+.nc-burger-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  pointer-events: auto;
+  position: relative;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nc-burger-bar {
+  display: block;
+  position: absolute;
+  left: 50%;
+  width: 20px;
+  height: 2px;
+  border-radius: 2px;
+  margin-left: -10px;
+  will-change: transform, opacity;
+}
+
+.nc-burger-bar-1 {
+  top: 14px;
+  background: #18181b;
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1), background 0.26s ease;
+}
+
+.nc-burger-bar-2 {
+  top: 21px;
+  background: #18181b;
+  transition: opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1), transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), background 0.12s ease;
+}
+
+.nc-burger-bar-3 {
+  top: 28px;
+  background: #18181b;
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1), background 0.26s ease;
+}
+
+.nc-burger-btn.nc-open .nc-burger-bar-1 {
+  transform: translateY(7px) rotate(45deg);
+  background: var(--accent);
+}
+
+.nc-burger-btn.nc-open .nc-burger-bar-2 {
+  opacity: 0;
+  transform: scaleX(0.6);
+  background: var(--accent);
+}
+
+.nc-burger-btn.nc-open .nc-burger-bar-3 {
+  transform: translateY(-7px) rotate(-45deg);
+  background: var(--accent);
+}
+
+.nc-burger-btn.nc-closing .nc-burger-bar-1 {
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1) 0.08s, background 0.26s ease 0.08s;
+}
+
+.nc-burger-btn.nc-closing .nc-burger-bar-2 {
+  transition: opacity 0.16s cubic-bezier(0.4, 0, 0.2, 1) 0.12s, transform 0.16s cubic-bezier(0.4, 0, 0.2, 1) 0.12s, background 0.16s ease 0.12s;
+}
+
+.nc-burger-btn.nc-closing .nc-burger-bar-3 {
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1) 0.08s, background 0.26s ease 0.08s;
+}
+
+.nc-expand {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  will-change: max-height, opacity;
+  transform: translateZ(0);
+  transition: max-height 0.36s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nc-expand.nc-open {
+  opacity: 1;
+}
+
+.nc-expand.nc-closing {
+  opacity: 0;
+  transition: max-height 0.32s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nc-expand-inner {
+  padding: 0 8px 8px 8px;
+}
+
+.nc-separator {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.06);
+  margin: 0 12px 8px 12px;
+}
+
+.nc-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-radius: 14px;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #3f3f46;
+  transition: background 0.2s ease, color 0.2s ease;
+  opacity: 0;
+  transform: translateY(8px);
+  will-change: transform, opacity;
+}
+
+.nc-menu-item:hover {
+  background: rgba(0, 0, 0, 0.03);
+  color: #18181b;
+}
+
+.nc-menu-item .nc-arrow {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  opacity: 0.25;
+}
+
+.nc-expand.nc-open .nc-menu-item {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.nc-expand.nc-open .nc-menu-item-0 { transition: opacity 0.24s cubic-bezier(0.22, 1, 0.36, 1) 0.08s, transform 0.24s cubic-bezier(0.22, 1, 0.36, 1) 0.08s, background 0.2s ease, color 0.2s ease; }
+.nc-expand.nc-open .nc-menu-item-1 { transition: opacity 0.24s cubic-bezier(0.22, 1, 0.36, 1) 0.14s, transform 0.24s cubic-bezier(0.22, 1, 0.36, 1) 0.14s, background 0.2s ease, color 0.2s ease; }
+.nc-expand.nc-open .nc-menu-item-2 { transition: opacity 0.24s cubic-bezier(0.22, 1, 0.36, 1) 0.20s, transform 0.24s cubic-bezier(0.22, 1, 0.36, 1) 0.20s, background 0.2s ease, color 0.2s ease; }
+.nc-expand.nc-open .nc-menu-item-3 { transition: opacity 0.24s cubic-bezier(0.22, 1, 0.36, 1) 0.26s, transform 0.24s cubic-bezier(0.22, 1, 0.36, 1) 0.26s, background 0.2s ease, color 0.2s ease; }
+.nc-expand.nc-open .nc-menu-item-4 { transition: opacity 0.24s cubic-bezier(0.22, 1, 0.36, 1) 0.32s, transform 0.24s cubic-bezier(0.22, 1, 0.36, 1) 0.32s, background 0.2s ease, color 0.2s ease; }
+
+.nc-expand.nc-closing .nc-menu-item {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.nc-expand.nc-closing .nc-menu-item-4 { transition: opacity 0.1s cubic-bezier(0.4, 0, 1, 1) 0s, transform 0.1s cubic-bezier(0.4, 0, 1, 1) 0s; }
+.nc-expand.nc-closing .nc-menu-item-3 { transition: opacity 0.1s cubic-bezier(0.4, 0, 1, 1) 0.02s, transform 0.1s cubic-bezier(0.4, 0, 1, 1) 0.02s; }
+.nc-expand.nc-closing .nc-menu-item-2 { transition: opacity 0.1s cubic-bezier(0.4, 0, 1, 1) 0.04s, transform 0.1s cubic-bezier(0.4, 0, 1, 1) 0.04s; }
+.nc-expand.nc-closing .nc-menu-item-1 { transition: opacity 0.1s cubic-bezier(0.4, 0, 1, 1) 0.06s, transform 0.1s cubic-bezier(0.4, 0, 1, 1) 0.06s; }
+.nc-expand.nc-closing .nc-menu-item-0 { transition: opacity 0.1s cubic-bezier(0.4, 0, 1, 1) 0.08s, transform 0.1s cubic-bezier(0.4, 0, 1, 1) 0.08s; }
+
+.nc-overlay-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.08);
+  z-index: 9998;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity;
+  transform: translateZ(0);
+}
+
+.nc-overlay-bg.nc-open {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+.nc-overlay-bg.nc-closing {
+  opacity: 0;
+  transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 767px) {
+  .nc-desktop-links {
+    display: none;
+  }
+  .nc-burger-btn {
+    display: flex;
+  }
+}
+
+@media (min-width: 768px) {
+  .nc-expand {
+    display: none;
+  }
+  .nc-burger-btn {
+    display: none;
+  }
+  .nc-overlay-bg {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nc-burger-bar-1,
+  .nc-burger-bar-2,
+  .nc-burger-bar-3,
+  .nc-burger-btn.nc-closing .nc-burger-bar-1,
+  .nc-burger-btn.nc-closing .nc-burger-bar-2,
+  .nc-burger-btn.nc-closing .nc-burger-bar-3,
+  .nc-expand,
+  .nc-expand.nc-closing,
+  .nc-menu-item,
+  .nc-expand.nc-open .nc-menu-item-0,
+  .nc-expand.nc-open .nc-menu-item-1,
+  .nc-expand.nc-open .nc-menu-item-2,
+  .nc-expand.nc-open .nc-menu-item-3,
+  .nc-expand.nc-open .nc-menu-item-4,
+  .nc-expand.nc-closing .nc-menu-item-0,
+  .nc-expand.nc-closing .nc-menu-item-1,
+  .nc-expand.nc-closing .nc-menu-item-2,
+  .nc-expand.nc-closing .nc-menu-item-3,
+  .nc-expand.nc-closing .nc-menu-item-4,
+  .nc-overlay-bg,
+  .nc-overlay-bg.nc-closing {
+    transition: none !important;
+  }
+}
+</style>
+
+<script>
+  (function () {
+    var burger = document.getElementById('nc-burger');
+    var expand = document.getElementById('nc-expand');
+    var overlayBg = document.getElementById('nc-overlay-bg');
+    var logoBtn = document.getElementById('nc-logo-top');
+    var items = expand.querySelectorAll('.nc-menu-item');
+    var isOpen = false;
+    var isAnimating = false;
+    var expandHeight = 0;
+
+    logoBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (isOpen) closeMenu();
+    });
+
+    function measureHeight() {
+      expand.style.maxHeight = 'none';
+      expand.style.opacity = '0';
+      expand.style.position = 'absolute';
+      expand.style.visibility = 'hidden';
+      expandHeight = expand.scrollHeight;
+      expand.style.maxHeight = '';
+      expand.style.opacity = '';
+      expand.style.position = '';
+      expand.style.visibility = '';
+    }
+
+    function openMenu() {
+      if (isAnimating) return;
+      isAnimating = true;
+      isOpen = true;
+
+      measureHeight();
+
+      burger.classList.remove('nc-closing');
+      burger.classList.add('nc-open');
+      burger.setAttribute('aria-expanded', 'true');
+
+      expand.classList.remove('nc-closing');
+
+      expand.style.maxHeight = '0px';
+      expand.style.opacity = '0';
+
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          expand.classList.add('nc-open');
+          expand.style.maxHeight = expandHeight + 'px';
+          expand.style.opacity = '1';
+        });
+      });
+
+      overlayBg.classList.remove('nc-closing');
+      overlayBg.classList.add('nc-open');
+      document.body.style.overflow = 'hidden';
+
+      setTimeout(function () { isAnimating = false; }, 450);
+    }
+
+    function closeMenu() {
+      if (isAnimating) return;
+      isAnimating = true;
+      isOpen = false;
+
+      expand.classList.remove('nc-open');
+      expand.classList.add('nc-closing');
+
+      overlayBg.classList.remove('nc-open');
+      overlayBg.classList.add('nc-closing');
+
+      burger.classList.add('nc-closing');
+      burger.classList.remove('nc-open');
+      burger.setAttribute('aria-expanded', 'false');
+
+      setTimeout(function () {
+        expand.style.maxHeight = '0px';
+        expand.style.opacity = '0';
+      }, 120);
+
+      setTimeout(function () {
+        expand.classList.remove('nc-closing');
+        overlayBg.classList.remove('nc-closing');
+        burger.classList.remove('nc-closing');
+        document.body.style.overflow = '';
+        expand.style.maxHeight = '';
+        expand.style.opacity = '';
+
+        for (var i = 0; i < items.length; i++) {
+          items[i].style.transition = 'none';
+          items[i].style.opacity = '0';
+          items[i].style.transform = 'translateY(8px)';
+        }
+
+        setTimeout(function () {
+          for (var j = 0; j < items.length; j++) {
+            items[j].style.transition = '';
+            items[j].style.opacity = '';
+            items[j].style.transform = '';
+          }
+          isAnimating = false;
+        }, 30);
+      }, 420);
+    }
+
+    burger.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (isOpen) { closeMenu(); } else { openMenu(); }
+    });
+
+    overlayBg.addEventListener('click', function () {
+      if (isOpen) closeMenu();
+    });
+
+    for (var i = 0; i < items.length; i++) {
+      items[i].addEventListener('click', function () {
+        if (isOpen) closeMenu();
+      });
+    }
+  })();
+</script>

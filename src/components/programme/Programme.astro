@@ -1,0 +1,722 @@
+---
+/**
+ * Programme.astro — Annexe 4 : « Contenu du programme ».
+ *
+ * Switcher de 6 modules (01–06) : grille de boutons numérotés, module actif
+ * surligné corail. Le panneau actif affiche titre + sous-titre + liste de
+ * points (checks corail) + un mockup animé unique par module.
+ *
+ * Reconstruit verbatim depuis block_programme.html (Annexe 4). Le DOM des
+ * modules + mockups est généré côté client par un tableau `modules` (data-driven),
+ * initialisé sur DOMContentLoaded. Au clic d'un module : on re-render le panneau
+ * et on RE-DÉCLENCHE les animations du mockup (reset animation → reflow → restore).
+ *
+ * Nettoyage : Google Fonts / Tailwind CDN / iconify supprimés ; iconify-icon
+ * remplacé par des SVG inline ; #e0625a → var(--accent). Keyframes conservées
+ * verbatim (durées, courbes). prefers-reduced-motion : mockups en boucle figés.
+ *
+ * Ancre navbar « Contenu » → <section id="contenu">.
+ */
+import CtaPill from '@components/ui/CtaPill.astro';
+---
+
+<section id="contenu" class="nc-prog">
+  <div class="nc-prog__head">
+    <span class="nc-prog__badge">Contenu du programme</span>
+    <h2 class="nc-prog__title">Tout ce dont tu as besoin pour réussir est là</h2>
+  </div>
+
+  <div class="nc-prog__container">
+    <!-- Navigation des Modules -->
+    <div class="nc-prog__grid" id="modulesGrid"></div>
+
+    <!-- Carte de Contenu Dynamique -->
+    <div class="nc-prog__panel-wrap">
+      <div class="nc-prog__connector"></div>
+
+      <div class="nc-prog__panel">
+        <div class="nc-prog__panel-glow"></div>
+
+        <div class="nc-prog__panel-inner">
+          <!-- Zone de texte -->
+          <div class="nc-prog__content key-content fade-in">
+            <div class="nc-prog__content-head">
+              <h3 class="nc-prog__detail-title" id="detailTitle">Chargement...</h3>
+              <p class="nc-prog__detail-subtitle" id="detailSubtitle"></p>
+            </div>
+
+            <div class="nc-prog__points" id="detailPoints"></div>
+          </div>
+
+          <!-- Zone Visuelle -->
+          <div class="nc-prog__visual" id="visualContainer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nc-prog__cta">
+    <CtaPill label="Télécharger le programme complet" modal="programme" size="lg" />
+  </div>
+</section>
+
+<style>
+  /* ====== Layout section ====== */
+  .nc-prog {
+    font-family: inherit;
+    text-align: left;
+    padding: 64px 0;
+  }
+  .nc-prog__head {
+    max-width: 72rem;
+    margin: 0 auto 2.5rem;
+    padding: 0 1rem;
+    text-align: center;
+  }
+  .nc-prog__badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    background: var(--accent-soft, #fceceb);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 16px;
+  }
+  .nc-prog__title {
+    font-size: clamp(1.7rem, 4vw, 2.5rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #18181b;
+    line-height: 1.15;
+    margin: 0;
+  }
+
+  .nc-prog__container {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 0.5rem;
+  }
+  @media (min-width: 640px) {
+    .nc-prog__container { padding-left: 1.5rem; padding-right: 1.5rem; }
+  }
+
+  .nc-prog__container :global(::-webkit-scrollbar) { width: 6px; }
+  .nc-prog__container :global(::-webkit-scrollbar-track) { background: transparent; }
+  .nc-prog__container :global(::-webkit-scrollbar-thumb) {
+    background-color: #e4e4e7;
+    border-radius: 20px;
+  }
+
+  /* ====== Grille des modules ====== */
+  .nc-prog__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    column-gap: 1rem;
+    row-gap: 0.5rem;
+  }
+  @media (min-width: 768px) { .nc-prog__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .nc-prog__grid { grid-template-columns: repeat(3, 1fr); } }
+
+  .nc-prog__grid :global(.module-row) {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+  }
+  .nc-prog__grid :global(.module-num) {
+    font-size: 12px;
+    font-weight: 600;
+    color: #d4d4d8;
+    width: 1.5rem;
+    text-align: right;
+  }
+  .nc-prog__grid :global(.module-btn) {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem 0.5rem 0.5rem;
+    border-radius: 1rem;
+    border: 1px solid #e4e4e7;
+    background: #fff;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .nc-prog__grid :global(.module-btn:hover) {
+    border-color: #d4d4d8;
+    background: #fafafa;
+  }
+  .nc-prog__grid :global(.icon-box) {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    background: #f4f4f5;
+    color: #a1a1aa;
+  }
+  .nc-prog__grid :global(.module-text) {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.35;
+    color: #71717a;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* État actif */
+  .nc-prog__grid :global(.module-btn-active) {
+    border-color: rgba(224, 98, 90, 0.15);
+    background-color: #fff;
+    box-shadow: 0 4px 20px -2px rgba(224, 98, 90, 0.08);
+  }
+  .nc-prog__grid :global(.module-btn-active .icon-box) {
+    background-color: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .nc-prog__grid :global(.module-btn-active .module-text) { color: #18181b; }
+
+  /* Shimmer au survol */
+  .nc-prog__grid :global(.shimmer) {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to right, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
+    transform: skewX(-20deg) translateX(-150%);
+    transition: transform 0.5s;
+    pointer-events: none;
+  }
+  .nc-prog__grid :global(.module-btn:hover .shimmer) {
+    transform: skewX(-20deg) translateX(150%);
+    transition: transform 1s;
+  }
+
+  /* ====== Panneau de contenu ====== */
+  .nc-prog__panel-wrap {
+    margin-top: 1rem;
+    width: 100%;
+    position: relative;
+  }
+  .nc-prog__connector {
+    position: absolute;
+    top: -1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 1rem;
+    background: linear-gradient(to bottom, transparent, #e4e4e7);
+    display: none;
+  }
+  @media (min-width: 768px) { .nc-prog__connector { display: block; } }
+
+  .nc-prog__panel {
+    background: #fff;
+    border-radius: 1.5rem;
+    border: 1px solid #e4e4e7;
+    box-shadow: 0 20px 25px -5px rgba(228, 228, 231, 0.4);
+    overflow: hidden;
+    min-height: 420px;
+    transition: all 0.3s;
+    position: relative;
+  }
+  .nc-prog__panel-glow {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 24rem;
+    height: 24rem;
+    background: var(--accent);
+    border-radius: 9999px;
+    filter: blur(64px);
+    margin-right: -5rem;
+    margin-top: -5rem;
+    pointer-events: none;
+    opacity: 0.07;
+  }
+  .nc-prog__panel-inner {
+    padding: 2rem;
+    position: relative;
+    z-index: 10;
+    display: grid;
+    gap: 2.5rem;
+    height: 100%;
+  }
+  @media (min-width: 768px) {
+    .nc-prog__panel-inner {
+      padding: 3rem;
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .nc-prog__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: left;
+    gap: 2rem;
+  }
+  @media (min-width: 768px) { .nc-prog__content { grid-column: span 2 / span 2; } }
+
+  .nc-prog__content-head { width: 100%; }
+  .nc-prog__detail-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #18181b;
+    margin: 0;
+  }
+  @media (min-width: 768px) { .nc-prog__detail-title { font-size: 1.875rem; } }
+  .nc-prog__detail-subtitle {
+    font-size: 14px;
+    color: #71717a;
+    line-height: 1.6;
+    padding-top: 0.5rem;
+    margin: 0;
+  }
+
+  .nc-prog__points {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding-top: 0.5rem;
+    width: 100%;
+  }
+  .nc-prog__points :global(.point) {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    text-align: left;
+  }
+  .nc-prog__points :global(.point-check) {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.125rem;
+    color: #fff;
+  }
+  .nc-prog__points :global(.point p) {
+    font-size: 14px;
+    color: #52525b;
+    line-height: 1.6;
+    text-align: left;
+    margin: 0;
+  }
+
+  .nc-prog__visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    user-select: none;
+    margin-top: 1.5rem;
+  }
+  @media (min-width: 768px) {
+    .nc-prog__visual {
+      border-left: 1px solid #f4f4f5;
+      padding-left: 2.5rem;
+      margin-top: 0;
+    }
+  }
+
+  .nc-prog__cta {
+    display: flex;
+    justify-content: center;
+    margin-top: 2.5rem;
+  }
+
+  /* ====== Mockups : utilitaires repris du source (scopés via :global) ====== */
+  .nc-prog__visual :global(.mk) { position: relative; }
+  .nc-prog__visual :global(.mk-row) { display: flex; }
+  .nc-prog__visual :global(.mk-col) { display: flex; flex-direction: column; }
+  .nc-prog__visual :global(.mk-center) { align-items: center; justify-content: center; }
+  .nc-prog__visual :global(.mk-between) { justify-content: space-between; }
+
+  /* ====== Entrée du panneau ====== */
+  .fade-in { animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ====== Keyframes des mockups (verbatim) ====== */
+  @keyframes radar {
+    0% { transform: scale(0.8); opacity: 0.8; }
+    100% { transform: scale(2); opacity: 0; }
+  }
+  @keyframes float-y {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes slide-up {
+    0% { transform: translateY(10px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes grow-bar {
+    0% { height: 10%; }
+    100% { height: var(--h); }
+  }
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes pulse-card {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(224, 98, 90, 0); }
+    50% { transform: scale(1.02); box-shadow: 0 10px 25px -5px rgba(224, 98, 90, 0.25); }
+  }
+  @keyframes typing {
+    0% { width: 0; }
+    50% { width: 100%; }
+    100% { width: 0; }
+  }
+  @keyframes stamp-drop {
+    0%   { transform: translateY(-30px) rotate(-8deg) scale(1.3); opacity: 0; }
+    60%  { transform: translateY(4px) rotate(-8deg) scale(0.95); opacity: 1; }
+    75%  { transform: translateY(-2px) rotate(-8deg) scale(1.02); }
+    100% { transform: translateY(0px) rotate(-8deg) scale(1); opacity: 1; }
+  }
+  @keyframes stamp-glow {
+    0%, 100% { box-shadow: 0 0 0px 0px rgba(224, 98, 90, 0); }
+    50%       { box-shadow: 0 0 18px 4px rgba(224, 98, 90, 0.25); }
+  }
+  @keyframes doc-appear {
+    0%   { opacity: 0; transform: translateY(8px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes check-draw {
+    0%   { stroke-dashoffset: 30; opacity: 0; }
+    30%  { opacity: 1; }
+    100% { stroke-dashoffset: 0; opacity: 1; }
+  }
+  @keyframes progress-fill {
+    0%   { width: 0%; }
+    100% { width: 100%; }
+  }
+  @keyframes badge-pop {
+    0%   { opacity: 0; transform: scale(0.6); }
+    70%  { transform: scale(1.1); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  /* ====== Classes d'animation (verbatim) ====== */
+  .nc-prog__visual :global(.animate-stamp-drop) {
+    animation: stamp-drop 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+               stamp-glow 2.5s ease-in-out 0.6s infinite;
+  }
+  .nc-prog__visual :global(.animate-doc-appear) { animation: doc-appear 0.5s ease-out forwards; }
+  .nc-prog__visual :global(.animate-check-draw) {
+    stroke-dasharray: 30;
+    stroke-dashoffset: 30;
+    animation: check-draw 0.5s cubic-bezier(0.22, 1, 0.36, 1) 1.6s forwards;
+  }
+  .nc-prog__visual :global(.animate-progress-fill) { animation: progress-fill 1.4s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards; }
+  .nc-prog__visual :global(.animate-badge-pop) { animation: badge-pop 0.4s cubic-bezier(0.22, 1, 0.36, 1) 1.7s both; }
+  .nc-prog__visual :global(.animate-radar) { animation: radar 2s infinite linear; }
+  .nc-prog__visual :global(.animate-float-y) { animation: float-y 3s ease-in-out infinite; }
+  .nc-prog__visual :global(.animate-slide-1) { animation: slide-up 0.6s ease-out forwards 0.1s; }
+  .nc-prog__visual :global(.animate-slide-2) { animation: slide-up 0.6s ease-out forwards 0.2s; }
+  .nc-prog__visual :global(.animate-slide-3) { animation: slide-up 0.6s ease-out forwards 0.3s; }
+  .nc-prog__visual :global(.animate-grow) { animation: grow-bar 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+  .nc-prog__visual :global(.animate-spin-slow) { animation: spin-slow 8s linear infinite; }
+  .nc-prog__visual :global(.animate-pulse-card) { animation: pulse-card 3s ease-in-out infinite; }
+  .nc-prog__visual :global(.animate-pulse-soft) { animation: pulse-soft 1.4s ease-in-out infinite; }
+  @keyframes pulse-soft { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  /* ====== Responsive (repris du source) ====== */
+  @media (max-width: 768px) {
+    .nc-prog__container { padding-left: 1rem; padding-right: 1rem; padding-bottom: 2rem; }
+    .nc-prog__panel { min-height: auto; }
+    .nc-prog__visual :global(.animate-float-y) { animation: float-y 4s ease-in-out infinite; }
+    .nc-prog__visual :global(.animate-pulse-card) { animation: pulse-card 4s ease-in-out infinite; }
+    .nc-prog__visual > :global(div) { transform-origin: center; max-width: 100%; }
+    .nc-prog__visual { margin-top: 1rem; margin-bottom: 0; }
+  }
+
+  /* ====== prefers-reduced-motion : mockups figés sur l'état final ====== */
+  @media (prefers-reduced-motion: reduce) {
+    .nc-prog__visual :global(.animate-radar),
+    .nc-prog__visual :global(.animate-float-y),
+    .nc-prog__visual :global(.animate-slide-1),
+    .nc-prog__visual :global(.animate-slide-2),
+    .nc-prog__visual :global(.animate-slide-3),
+    .nc-prog__visual :global(.animate-grow),
+    .nc-prog__visual :global(.animate-spin-slow),
+    .nc-prog__visual :global(.animate-pulse-card),
+    .nc-prog__visual :global(.animate-pulse-soft) {
+      animation: none !important;
+    }
+    /* Affiche les éléments dont l'état initial est masqué (opacity 0) */
+    .nc-prog__visual :global(.animate-stamp-drop),
+    .nc-prog__visual :global(.animate-doc-appear),
+    .nc-prog__visual :global(.animate-badge-pop) {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .nc-prog__visual :global(.animate-progress-fill) { animation: none !important; width: 100% !important; }
+    .nc-prog__visual :global(.animate-check-draw) { animation: none !important; stroke-dashoffset: 0 !important; opacity: 1 !important; }
+    .fade-in { animation: none !important; opacity: 1 !important; transform: none !important; }
+  }
+</style>
+
+<script>
+  // SVG inline (remplacent les iconify-icon du source).
+  const ICONS: Record<string, string> = {
+    'solar:money-bag-linear':
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 6.5h7l1.5 3c1.6 2 2.5 4 2.5 6 0 .9-.6 2-3.5 2h-9C4.1 17.5 3.5 16.4 3.5 15.5c0-2 .9-4 2.5-6l1.5-3Z"/><path d="M9.5 6.5l-1-2.5h7l-1 2.5"/><path d="M12 11v3M10.5 12h3" stroke-linecap="round"/></svg>',
+    'solar:database-linear':
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>',
+    'solar:code-scan-linear':
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M10 10l-2 2 2 2M14 10l2 2-2 2"/></svg>',
+    'solar:bolt-circle-linear':
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M13 7l-4 6h3l-1 4 4-6h-3l1-4Z"/></svg>',
+    'solar:case-round-linear':
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="18" height="13" rx="3"/><path d="M9 7V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1"/></svg>',
+    'solar:rocket-linear':
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4c3 1 5 3 6 6-2 2-4 3-7 4l-3-3c1-3 2-5 4-7Z"/><path d="M10 14l-3-3c-2 .5-3 1.5-4 3 1.5.5 2.5 1 3 2"/><path d="M13 11h.01"/><path d="M7 17c-1 1-1.5 2.5-1.5 4 1.5 0 3-.5 4-1.5"/></svg>',
+    'solar:user-linear':
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="3.5"/><path d="M5 19c0-3 3-5 7-5s7 2 7 5"/></svg>',
+    'solar:hamburger-menu-linear':
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
+    'solar:link-circle-linear':
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 14a2.5 2.5 0 0 0 3.5 0l1.5-1.5a2.5 2.5 0 0 0-3.5-3.5l-.5.5"/><path d="M14 10a2.5 2.5 0 0 0-3.5 0L9 11.5a2.5 2.5 0 0 0 3.5 3.5l.5-.5"/></svg>',
+    'solar:logo-notion':
+      '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8l4 .5v7"/><path d="M8 8v8M16 7v9"/></svg>',
+    'solar:infinity-linear':
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12c0 1.7-1.3 3-3 3s-3-1.3-3-3 1.3-3 3-3c1.5 0 2.4 1.1 3 2 .6.9 1.5 2 3 2s3-1.3 3-3-1.3-3-3-3c-1.5 0-2.4 1.1-3 2"/></svg>',
+    'solar:letter-linear':
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M4 7l8 6 8-6"/></svg>',
+    'solar:calendar-linear':
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>',
+    'solar:check-read-linear':
+      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l3 3 6-7"/><path d="M11 16l1 1 9-10"/></svg>',
+  };
+  const icon = (name: string) => ICONS[name] || '';
+
+  interface ModuleDef {
+    id: number;
+    title: string;
+    icon: string;
+    subtitle: string;
+    points: string[];
+    visual: string;
+  }
+
+  const modules: ModuleDef[] = [
+    {
+      id: 1,
+      title: 'Monétisation',
+      icon: 'solar:money-bag-linear',
+      subtitle: 'Tout ce que tu as besoin pour atteindre les 5 000€ / mois.',
+      points: [
+        "Les 6 types d'entreprises à éviter (tout le monde pense à elles, mais ce sont les pires…)",
+        "Un plan d'action concret pour que ta création de contenus rapporte (vraiment) des clients premium.",
+        "Un plan d'action concret pour lancer une machine de prospection automatisée qui travaille pour toi.",
+        "La stratégie d'apport d'affaires qui m'a rapporté +25 000€ de deal, sans rien faire.",
+        "La méthode pour signer +80% de tes prospects grâce à une structure d'appels de vente optimisée.",
+        "Comment définir tes prix pour que chaque projet te rapporte +2 500€.",
+        "Rediffusion d'appels de vente à +25 000€ pour se former.",
+      ],
+      visual: `<div class="mk" style="width:14rem;height:8rem"><div class="mk mk-col mk-between animate-pulse-card" style="width:100%;height:100%;background:#fff;border:1px solid #e4e4e7;border-radius:0.75rem;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);padding:1rem 1.25rem;overflow:hidden"><div class="mk-row" style="justify-content:space-between;align-items:flex-start"><div class="mk-row" style="gap:0.5rem;align-items:center"><div class="mk-center" style="width:2rem;height:2rem;background:#f4f4f5;border-radius:9999px;flex-shrink:0">${icon('solar:user-linear')}</div><div style="display:flex;flex-direction:column;gap:0.25rem"><div style="height:6px;width:4rem;background:#f4f4f5;border-radius:3px"></div><div style="height:6px;width:2.5rem;background:#f4f4f5;border-radius:3px"></div></div></div><span style="color:#18181b;font-weight:700;font-family:monospace;white-space:nowrap;margin-left:0.5rem">5 000 €</span></div><div style="display:flex;flex-direction:column;gap:0.5rem;margin-top:auto"><div class="mk-row mk-between" style="align-items:center;font-size:10px;color:#a1a1aa;text-transform:uppercase;letter-spacing:0.05em;font-weight:500"><span>Objectif Mensuel</span><span class="animate-badge-pop mk-row" style="color:var(--accent);opacity:0;align-items:center;gap:0.25rem">Atteint <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><polyline class="animate-check-draw" points="2,6 5,9 10,3" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div><div style="width:100%;height:4px;background:#f4f4f5;border-radius:9999px;overflow:hidden"><div class="animate-progress-fill" style="height:100%;background:var(--accent);width:0;border-radius:9999px"></div></div></div></div></div>`,
+    },
+    {
+      id: 2,
+      title: 'Architecture',
+      icon: 'solar:database-linear',
+      subtitle: "Toutes les étapes préliminaires à maîtriser pour créer un Notion performant qui répond aux besoins d'une entreprise.",
+      points: [
+        "La méthode des Piliers pour structurer le système d'une entreprise, même sans connaître son métier.",
+        "La méthode pour faire un audit dans n'importe quelle entreprise que tu découvres.",
+        "Les 4 étapes pour transformer un besoin en une solution claire et scalable.",
+        "7 Exemples de Notion de clients pour que tu identifies les besoins récurrents.",
+      ],
+      visual: `<div class="mk mk-col mk-center" style="width:10rem;height:10rem;gap:0.25rem"><div class="mk-row animate-slide-1" style="width:8rem;height:2.5rem;background:#fff;border:1px solid #e4e4e7;border-radius:0.5rem;box-shadow:0 1px 2px rgba(0,0,0,0.05);align-items:center;padding:0 0.75rem;gap:0.5rem;position:relative;z-index:30"><span style="color:#d4d4d8">${icon('solar:hamburger-menu-linear')}</span><div style="height:6px;width:3rem;background:#f4f4f5;border-radius:3px"></div></div><div class="mk-row animate-slide-2" style="width:8rem;height:2.5rem;background:#fff;border:1px solid #e4e4e7;border-radius:0.5rem;box-shadow:0 1px 2px rgba(0,0,0,0.05);align-items:center;padding:0 0.75rem;gap:0.5rem;position:relative;z-index:20;margin-top:-1rem;opacity:0.8;transform:scale(0.95)"><span style="color:#d4d4d8">${icon('solar:hamburger-menu-linear')}</span><div style="height:6px;width:4rem;background:#f4f4f5;border-radius:3px"></div></div><div class="mk-row animate-slide-3" style="width:8rem;height:2.5rem;background:#fff;border:1px solid #e4e4e7;border-radius:0.5rem;box-shadow:0 1px 2px rgba(0,0,0,0.05);align-items:center;padding:0 0.75rem;gap:0.5rem;position:relative;z-index:10;margin-top:-1rem;opacity:0.6;transform:scale(0.9)"><span style="color:#d4d4d8">${icon('solar:hamburger-menu-linear')}</span><div style="height:6px;width:2rem;background:#f4f4f5;border-radius:3px"></div></div><div class="mk-center animate-pulse-card" style="position:absolute;right:0;top:50%;transform:translateY(-50%) translateX(1rem);width:2.5rem;height:2.5rem;background:var(--accent);border-radius:0.75rem;color:#fff;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);z-index:40">${icon('solar:link-circle-linear')}</div></div>`,
+    },
+    {
+      id: 3,
+      title: 'Création',
+      icon: 'solar:code-scan-linear',
+      subtitle: 'Toutes les étapes pour créer un Notion réussi même en partant de zéro.',
+      points: [
+        "Les 6 erreurs qui ruinent la création d'un Notion.",
+        "La logique des bases de données relationnelles pour structurer un Notion performant.",
+        "On crée ensemble le Notion d'un client de A à Z qu'on corrige.",
+        "Les 10 règles de design pour faire une interface réussie, avec des exemples.",
+      ],
+      visual: `<div class="mk mk-col" style="width:12rem;height:8rem;background:#18181b;border-radius:0.75rem;padding:1rem;box-shadow:0 20px 25px -5px rgba(0,0,0,0.2);gap:0.5rem;font-family:monospace;font-size:12px;overflow:hidden"><div class="mk-row" style="gap:0.375rem;margin-bottom:0.25rem"><div style="width:0.5rem;height:0.5rem;border-radius:9999px;background:rgba(224,98,90,0.5)"></div><div style="width:0.5rem;height:0.5rem;border-radius:9999px;background:rgba(234,179,8,0.5)"></div><div style="width:0.5rem;height:0.5rem;border-radius:9999px;background:rgba(34,197,94,0.5)"></div></div><div style="color:#71717a">prop("Status") == "Done" ?</div><div class="mk-row" style="align-items:center;gap:0.5rem"><span style="color:#4ade80">"✅ Complete"</span></div><div style="color:#71717a">: prop("Date") &lt; now() ?</div><div class="mk-row" style="align-items:center;gap:0.5rem"><span style="color:var(--accent)">"⚠️ Late"</span><span class="animate-pulse-soft" style="width:6px;height:1rem;background:#71717a"></span></div></div>`,
+    },
+    {
+      id: 4,
+      title: 'Automatisation & Workflow',
+      icon: 'solar:bolt-circle-linear',
+      subtitle: "Tout ce qu'il faut savoir pour aller plus loin dans l'automatisation.",
+      points: [
+        "Créer des automatisations avancées dans Notion avec 5 exemples de besoins récurrents.",
+        "Mise en relation avec notre réseau de partenaires pour des automatisations Make & N8N (on a négocié des tarifs pour toi).",
+        "Comment Notion AI peut augmenter l'efficacité.",
+        "Les 7 outils tiers qui se connectent à Notion pour faire une solution complète et efficace.",
+      ],
+      visual: `<div class="mk mk-center" style="width:10rem;height:10rem"><div class="animate-spin-slow" style="position:absolute;inset:0;border:1px dashed #e4e4e7;border-radius:9999px"></div><div class="mk-center" style="position:relative;z-index:10;width:3rem;height:3rem;background:#fff;border:1px solid #e4e4e7;border-radius:0.75rem;color:var(--accent);box-shadow:0 1px 2px rgba(0,0,0,0.05)">${icon('solar:logo-notion')}</div><div class="mk-center animate-float-y" style="position:absolute;top:-1rem;width:2rem;height:2rem;background:var(--accent);border-radius:0.5rem;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);color:#fff">${icon('solar:infinity-linear')}</div><div class="mk-center animate-float-y" style="position:absolute;bottom:0;left:0;width:2rem;height:2rem;background:#fff;border:1px solid #e4e4e7;border-radius:0.5rem;box-shadow:0 1px 2px rgba(0,0,0,0.05);color:#a1a1aa;animation-delay:0.5s">${icon('solar:letter-linear')}</div><div class="mk-center animate-float-y" style="position:absolute;bottom:0;right:0;width:2rem;height:2rem;background:#fff;border:1px solid #e4e4e7;border-radius:0.5rem;box-shadow:0 1px 2px rgba(0,0,0,0.05);color:#a1a1aa;animation-delay:1s">${icon('solar:calendar-linear')}</div></div>`,
+    },
+    {
+      id: 5,
+      title: 'Délivrer son client',
+      icon: 'solar:case-round-linear',
+      subtitle: "Tout ce qu'il faut savoir pour une gestion de projets réussie.",
+      points: [
+        "Les 3 Piliers d'une relation client réussie.",
+        "Les 10 erreurs à éviter pour ne pas échouer son projet.",
+        "Le process pour délivrer un client sans prendre le risque d'avoir des impayés.",
+      ],
+      visual: `<div class="mk mk-col mk-center" style="width:100%;max-width:180px;height:10rem;gap:0.25rem"><div class="mk-center" style="width:6rem;height:2rem;background:var(--accent);border-radius:0.5rem;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);z-index:10"><div class="mk-row" style="margin-left:-0.25rem"><div style="width:1rem;height:1rem;border-radius:9999px;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.1)"></div><div style="width:1rem;height:1rem;border-radius:9999px;background:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1);margin-left:-0.25rem"></div></div></div><div style="height:1.5rem;width:1px;background:#d4d4d8"></div><div class="mk-row" style="gap:0.5rem"><div class="mk-center animate-float-y" style="width:4rem;height:2rem;background:#fff;border:1px solid #e4e4e7;border-radius:0.5rem;box-shadow:0 1px 2px rgba(0,0,0,0.05)"><div style="width:2rem;height:4px;background:#e4e4e7;border-radius:2px"></div></div><div class="mk-center animate-float-y" style="width:4rem;height:2rem;background:#fff;border:1px solid #e4e4e7;border-radius:0.5rem;box-shadow:0 1px 2px rgba(0,0,0,0.05);animation-delay:0.3s"><div style="width:2rem;height:4px;background:#e4e4e7;border-radius:2px"></div></div></div><div style="height:1rem;width:1px;background:#d4d4d8"></div><div style="width:8rem;height:4px;background:#e4e4e7;border-radius:9999px;overflow:hidden"><div style="width:50%;height:100%;background:var(--accent);animation:typing 3s infinite"></div></div></div>`,
+    },
+    {
+      id: 6,
+      title: 'Lancer son activité',
+      icon: 'solar:rocket-linear',
+      subtitle: "Tout ce qu'il faut pour une activité professionnelle.",
+      points: [
+        'Comment déclarer son activité ?',
+        'Comment facturer tes clients ?',
+        "Les 8 outils qui facilitent la vie d'un consultant Notion.",
+      ],
+      visual: `<div class="mk mk-center" style="width:11rem;height:11rem">
+  <div class="animate-doc-appear mk-col" style="width:8rem;background:#fff;border:1px solid #e4e4e7;border-radius:0.5rem;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);padding:0.75rem;gap:0.5rem">
+    <div style="height:6px;width:5rem;background:#f4f4f5;border-radius:3px"></div>
+    <div style="height:6px;width:4rem;background:#f4f4f5;border-radius:3px"></div>
+    <div style="height:1px;width:100%;background:#f4f4f5;margin:0.25rem 0"></div>
+    <div style="height:6px;width:6rem;background:#f4f4f5;border-radius:3px"></div>
+    <div style="height:6px;width:5rem;background:#f4f4f5;border-radius:3px"></div>
+    <div style="height:6px;width:3.5rem;background:#f4f4f5;border-radius:3px"></div>
+    <div style="height:1px;width:100%;background:#f4f4f5;margin:0.25rem 0"></div>
+    <div style="height:6px;width:4.5rem;background:#f4f4f5;border-radius:3px"></div>
+  </div>
+  <div class="animate-stamp-drop mk-center" style="position:absolute;bottom:0.75rem;right:0.5rem;width:4rem;height:4rem;border-radius:9999px;border:3px solid var(--accent);opacity:0">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <polyline class="animate-check-draw" points="5,14 11,21 23,8" stroke="var(--accent)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+</div>`,
+    },
+  ];
+
+  let activeModuleId = 1;
+
+  function renderModules() {
+    const grid = document.getElementById('modulesGrid');
+    if (!grid) return;
+    grid.innerHTML = modules
+      .map((mod, index) => {
+        const isActive = mod.id === activeModuleId;
+        const num = (index + 1).toString().padStart(2, '0');
+        return `
+        <div class="module-row" data-module-id="${mod.id}">
+            <span class="module-num">${num}</span>
+            <div class="module-btn ${isActive ? 'module-btn-active' : ''}">
+                <div class="shimmer"></div>
+                <div class="icon-box">${icon(mod.icon)}</div>
+                <span class="module-text">${mod.title}</span>
+            </div>
+        </div>`;
+      })
+      .join('');
+    // Câblage des clics (remplace onclick inline du source)
+    grid.querySelectorAll<HTMLElement>('.module-row').forEach((row) => {
+      row.addEventListener('click', () => {
+        const id = Number(row.dataset.moduleId);
+        if (id) setActiveModule(id);
+      });
+    });
+  }
+
+  function renderContent() {
+    const mod = modules.find((m) => m.id === activeModuleId);
+    if (!mod) return;
+    const titleEl = document.getElementById('detailTitle');
+    const subEl = document.getElementById('detailSubtitle');
+    if (titleEl) titleEl.innerHTML = mod.title;
+    if (subEl) subEl.innerHTML = mod.subtitle;
+
+    const contentContainer = document.querySelector<HTMLElement>('.key-content');
+    if (contentContainer) {
+      contentContainer.classList.remove('fade-in');
+      void contentContainer.offsetWidth;
+      contentContainer.classList.add('fade-in');
+    }
+
+    const pointsEl = document.getElementById('detailPoints');
+    if (pointsEl) {
+      pointsEl.innerHTML = mod.points
+        .map(
+          (point) => `
+        <div class="point">
+            <div class="point-check">${icon('solar:check-read-linear')}</div>
+            <p>${point}</p>
+        </div>`,
+        )
+        .join('');
+    }
+
+    const visualEl = document.getElementById('visualContainer');
+    if (visualEl) {
+      visualEl.innerHTML = mod.visual;
+      // Replay animations on re-render (reset → reflow → restore)
+      visualEl
+        .querySelectorAll<HTMLElement>(
+          '.animate-stamp-drop, .animate-doc-appear, .animate-progress-fill, .animate-badge-pop, .animate-check-draw',
+        )
+        .forEach((el) => {
+          el.style.animation = 'none';
+          void el.offsetWidth;
+          el.style.animation = '';
+        });
+    }
+  }
+
+  function setActiveModule(id: number) {
+    activeModuleId = id;
+    renderModules();
+    renderContent();
+
+    // Scroll vers la carte de contenu sur mobile
+    if (window.innerWidth < 768) {
+      const card = document.querySelector<HTMLElement>('.nc-prog__panel-wrap');
+      if (card) {
+        setTimeout(() => {
+          const navbar =
+            document.getElementById('sio-nav') ||
+            document.querySelector<HTMLElement>('.sio-menu-nav');
+          const navbarOffset = navbar ? navbar.getBoundingClientRect().bottom + 16 : 100;
+          const cardTop = card.getBoundingClientRect().top + window.scrollY - navbarOffset;
+          window.scrollTo({ top: cardTop, behavior: 'smooth' });
+        }, 50);
+      }
+    }
+  }
+
+  function init() {
+    renderModules();
+    renderContent();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+</script>

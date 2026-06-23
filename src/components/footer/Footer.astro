@@ -1,0 +1,92 @@
+---
+/**
+ * Footer.astro — Pied de page (RECONSTRUITE d'après la spec §9.4).
+ *
+ * Bande corail pleine largeur + watermark géant « NOTION CLUB » en transparence,
+ * liens légaux, disclaimer Notion Labs. Balise <footer> (Astro pur, pas de SIO).
+ */
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <span class="footer__watermark" aria-hidden="true">NOTION CLUB</span>
+
+  <div class="footer__inner">
+    <nav class="footer__links" aria-label="Liens légaux">
+      <a href="/cgv">CGV</a>
+      <span class="footer__sep">|</span>
+      <a href="/cgu">CGU</a>
+      <span class="footer__sep">|</span>
+      <a href="/privacy">Privacy</a>
+      <span class="footer__sep">|</span>
+      <span>Tous droits réservés {year} © Notion Club</span>
+    </nav>
+
+    <p class="footer__disclaimer">
+      Ce site n'est pas affilié à Notion Labs, Inc. et n'est ni sponsorisé, ni
+      officiellement associé à Notion Labs, Inc.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+    overflow: hidden;
+    background: var(--accent);
+    color: #fff;
+    padding: 56px 20px 40px;
+  }
+
+  .footer__watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(48px, 16vw, 200px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: rgba(255, 255, 255, 0.08);
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    line-height: 1;
+  }
+
+  .footer__inner {
+    position: relative;
+    max-width: var(--container-max);
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .footer__links a {
+    transition: opacity 0.2s ease;
+  }
+  .footer__links a:hover {
+    opacity: 0.7;
+  }
+  .footer__sep {
+    opacity: 0.5;
+  }
+
+  .footer__disclaimer {
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.75);
+    max-width: 620px;
+  }
+</style>

@@ -1,0 +1,38 @@
+---
+/**
+ * ModalFillout.astro — Modal contenant un formulaire Fillout (embed standard).
+ *
+ * L'embed n'est PAS rendu au chargement : scripts/modals.ts injecte le
+ * <div data-fillout-id> au premier ouverture (0 octet réseau avant le clic).
+ * Le script Fillout est chargé une seule fois, à ce moment-là.
+ *
+ * Usage (dans index.astro) :
+ *   <ModalFillout filloutId="cnYDjzJD2bus" />
+ *   <ModalFillout filloutId="ieyhzBxLQkus" />
+ */
+import Modal from './Modal.astro';
+
+export interface Props {
+  filloutId: string;
+}
+const { filloutId } = Astro.props;
+---
+
+<Modal id={`modal-fillout-${filloutId}`} size="wide">
+  <!--
+    Le moteur (modals.ts) lit data-fillout-id et injecte ici l'embed standard :
+      data-fillout-embed-type="standard"
+      data-fillout-inherit-parameters
+      data-fillout-dynamic-resize
+    Les paramètres (source_trafic, vsl) sont hérités de l'URL de la page.
+  -->
+  <div class="nc-fillout-mount" data-fillout-mount data-fillout-id={filloutId}></div>
+</Modal>
+
+<style>
+  .nc-fillout-mount {
+    width: 100%;
+    height: 100%;
+    min-height: 60vh;
+  }
+</style>
